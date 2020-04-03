@@ -10,16 +10,16 @@ Provides following functions to manage containers and files.
  
 Supports the following arguments:
 - **-sa**: storage account name
-- **-f**: function, group action. Possible value
+- **-f**: function - group action, value:
   - **operations** or **information**
 - **-o**: 
-  - operation, action values for **operations*** group action
+  - action values for **operations** group action
     - **containercreate**: creates a container in the storage account
     - **containerdelete**: deletes a container in the storage account
     - **filedelete**: deletes a file in a container
     - **filedownload**: downloads a file from the container to a local disk
     - **fileupload**: uploads a file from a local disk to a container
-  - operation, action values for ***information*** group action
+  - action values for **information** group action
     - **containers**: lists containers in the storage account
     - **blobs**: list blobs in containers in the storage account
 - **-cn**: container name, used to define a container name associated with an action (supports * and ? wild cards)
