@@ -1,0 +1,5 @@
+connector/target/
+connector/classpath
+connector/project
+connector/Connector.config
+connector/dependendency-reduced-pom.xml

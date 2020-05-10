@@ -1,0 +1,279 @@
+[20-05-08 14:50:20.360] [ERROR] (StorageConnector            117) java.io.FileNotFoundException: C:\smagithub\azure-storage-java\connector\msazure.storage.connector\Connector.config (The system cannot find the file specified)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:219)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:157)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:112)
+	at java.base/sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:86)
+	at java.base/sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:184)
+	at java.base/java.net.URL.openStream(URL.java:1117)
+	at org.ini4j.spi.IniSource.<init>(IniSource.java:55)
+	at org.ini4j.spi.AbstractParser.newIniSource(AbstractParser.java:68)
+	at org.ini4j.spi.IniParser.parse(IniParser.java:67)
+	at org.ini4j.Ini.load(Ini.java:119)
+	at org.ini4j.Ini.load(Ini.java:114)
+	at org.ini4j.Ini.load(Ini.java:99)
+	at org.ini4j.Ini.<init>(Ini.java:69)
+	at com.smatechnologies.msazure.storage.connector.StorageConnector.main(StorageConnector.java:62)
+ 
+[20-05-08 14:58:37.699] [INFO ] (StorageConnector             65) ------------------------------------------------------------------------------------------------------- 
+[20-05-08 14:58:37.705] [INFO ] (StorageConnector             66) Storage Connector                    : Version 19.1.02 
+[20-05-08 14:58:37.705] [INFO ] (StorageConnector             67) ------------------------------------------------------------------------------------------------------- 
+[20-05-08 14:58:37.706] [INFO ] (StorageConnector             73) -f   (function)                      : information 
+[20-05-08 14:58:37.706] [INFO ] (StorageConnector             74) -o   (operation)                     : blobs 
+[20-05-08 14:58:37.706] [INFO ] (StorageConnector             75) -sa  (storage account)               : bvhtest 
+[20-05-08 14:58:37.708] [INFO ] (StorageConnector            101) -cn  (container name)                : ctest01 
+[20-05-08 14:58:37.708] [INFO ] (StorageConnector            104) -fn  (file name)                     : ALL 
+[20-05-08 14:58:37.739] [INFO ] (AzureStorageImpl            143) DEBUG : Get list of blobs (ALL) in container (ctest01) for storage account (bvhtest) 
+[20-05-08 14:58:37.771] [ERROR] (StorageConnector            117) java.lang.Exception: java.lang.Exception: java.lang.IllegalArgumentException: Invalid connection string.
+	at com.smatechnologies.msazure.storage.connector.impl.StorageConnectorImpl.processInformationRequest(StorageConnectorImpl.java:246)
+	at com.smatechnologies.msazure.storage.connector.StorageConnector.main(StorageConnector.java:106)
+Caused by: java.lang.Exception: java.lang.IllegalArgumentException: Invalid connection string.
+	at com.smatechnologies.msazure.storage.connector.impl.AzureStorageImpl.getContainerBlobList(AzureStorageImpl.java:213)
+	at com.smatechnologies.msazure.storage.connector.impl.StorageConnectorImpl.processInformationRequest(StorageConnectorImpl.java:235)
+	... 1 more
+Caused by: java.lang.IllegalArgumentException: Invalid connection string.
+	at com.azure.storage.common.implementation.connectionstring.ConnectionSettings.fromConnectionString(ConnectionSettings.java:81)
+	at com.azure.storage.common.implementation.connectionstring.StorageConnectionString.create(StorageConnectionString.java:105)
+	at com.azure.storage.blob.BlobServiceClientBuilder.connectionString(BlobServiceClientBuilder.java:204)
+	at com.smatechnologies.msazure.storage.connector.impl.AzureStorageImpl.getContainerBlobList(AzureStorageImpl.java:146)
+	... 2 more
+ 
+[20-05-08 15:16:37.349] [ERROR] (EncryptValue                 47) com.beust.jcommander.ParameterException: The following option is required: [-v]
+	at com.beust.jcommander.JCommander.validateOptions(JCommander.java:381)
+	at com.beust.jcommander.JCommander.parse(JCommander.java:341)
+	at com.beust.jcommander.JCommander.parse(JCommander.java:319)
+	at com.smatechnologies.msazure.storage.connector.EncryptValue.main(EncryptValue.java:36)
+ 
+[20-05-08 15:18:20.064] [INFO ] (EncryptValue                 37) --------------------------------------------------------------------- 
+[20-05-08 15:18:20.068] [INFO ] (EncryptValue                 38) EncryptValue          : Version 19.1.02 
+[20-05-08 15:18:20.068] [INFO ] (EncryptValue                 39) --------------------------------------------------------------------- 
+[20-05-08 15:18:20.069] [INFO ] (EncryptValue                 40) -v  (value)           : bvhtest=DefaultEndpointsProtocol=https;AccountName=bvhtest;AccountKey=7dQZrpv/gZN6sn6P8kPbzNj1DefOSxWVcJmBsoCLXvdjCfOWfMDwtHlMyzOzropwkzSHucAk5Ca5kpwS/blcOw==;EndpointSuffix=core.windows.net 
+[20-05-08 15:18:20.069] [INFO ] (EncryptValue                 41) --------------------------------------------------------------------- 
+[20-05-08 15:18:20.073] [INFO ] (EncryptValue                 44) ev : 596e5a6f6447567a644431455a575a68645778305257356b63473970626e527a55484a766447396a623277396148523063484d3751574e6a623356756445356862575539596e5a6f6447567a6444744259324e7664573530533256355054646b55567079634859765a31704f4e6e4e754e6c413461314269656b35714d55526c5a6b39546546645759307074516e4e7651307859646d527151325a5056325a4e524864305347784e65587050656e4a7663486472656c4e4964574e42617a564459545672634864544c324a7359303933505430375257356b63473970626e525464575a6d61586739593239795a5335336157356b6233647a4c6d356c64413d3d 
+[20-05-08 15:18:20.074] [INFO ] (EncryptValue                 45) --------------------------------------------------------------------- 
+[20-05-08 15:24:18.078] [INFO ] (StorageConnector             65) ------------------------------------------------------------------------------------------------------- 
+[20-05-08 15:24:18.086] [INFO ] (StorageConnector             66) Storage Connector                    : Version 19.1.02 
+[20-05-08 15:24:18.086] [INFO ] (StorageConnector             67) ------------------------------------------------------------------------------------------------------- 
+[20-05-08 15:24:18.086] [INFO ] (StorageConnector             73) -f   (function)                      : information 
+[20-05-08 15:24:18.087] [INFO ] (StorageConnector             74) -o   (operation)                     : blobs 
+[20-05-08 15:24:18.087] [INFO ] (StorageConnector             75) -sa  (storage account)               : bvhtest 
+[20-05-08 15:24:18.088] [INFO ] (StorageConnector            101) -cn  (container name)                : ctest01 
+[20-05-08 15:24:18.088] [INFO ] (StorageConnector            104) -fn  (file name)                     : ALL 
+[20-05-08 15:24:18.098] [INFO ] (AzureStorageImpl            143) DEBUG : Get list of blobs (ALL) in container (ctest01) for storage account (bvhtest) 
+[20-05-08 15:24:18.123] [ERROR] (StorageConnector            117) java.lang.Exception: java.lang.Exception: java.lang.IllegalArgumentException: Invalid connection string.
+	at com.smatechnologies.msazure.storage.connector.impl.StorageConnectorImpl.processInformationRequest(StorageConnectorImpl.java:246)
+	at com.smatechnologies.msazure.storage.connector.StorageConnector.main(StorageConnector.java:106)
+Caused by: java.lang.Exception: java.lang.IllegalArgumentException: Invalid connection string.
+	at com.smatechnologies.msazure.storage.connector.impl.AzureStorageImpl.getContainerBlobList(AzureStorageImpl.java:213)
+	at com.smatechnologies.msazure.storage.connector.impl.StorageConnectorImpl.processInformationRequest(StorageConnectorImpl.java:235)
+	... 1 more
+Caused by: java.lang.IllegalArgumentException: Invalid connection string.
+	at com.azure.storage.common.implementation.connectionstring.ConnectionSettings.fromConnectionString(ConnectionSettings.java:81)
+	at com.azure.storage.common.implementation.connectionstring.StorageConnectionString.create(StorageConnectionString.java:105)
+	at com.azure.storage.blob.BlobServiceClientBuilder.connectionString(BlobServiceClientBuilder.java:204)
+	at com.smatechnologies.msazure.storage.connector.impl.AzureStorageImpl.getContainerBlobList(AzureStorageImpl.java:146)
+	... 2 more
+ 
+[20-05-08 15:27:13.793] [INFO ] (StorageConnector             65) ------------------------------------------------------------------------------------------------------- 
+[20-05-08 15:27:13.798] [INFO ] (StorageConnector             66) Storage Connector                    : Version 19.1.02 
+[20-05-08 15:27:13.799] [INFO ] (StorageConnector             67) ------------------------------------------------------------------------------------------------------- 
+[20-05-08 15:27:13.799] [INFO ] (StorageConnector             73) -f   (function)                      : information 
+[20-05-08 15:27:13.799] [INFO ] (StorageConnector             74) -o   (operation)                     : blobs 
+[20-05-08 15:27:13.799] [INFO ] (StorageConnector             75) -sa  (storage account)               : bvhtest 
+[20-05-08 15:27:13.800] [INFO ] (StorageConnector            101) -cn  (container name)                : ctest01 
+[20-05-08 15:27:13.800] [INFO ] (StorageConnector            104) -fn  (file name)                     : ALL 
+[20-05-08 15:27:13.809] [INFO ] (AzureStorageImpl            143) DEBUG : Get list of blobs (ALL) in container (ctest01) for storage account (bvhtest) 
+[20-05-08 15:27:13.836] [ERROR] (StorageConnector            117) java.lang.Exception: java.lang.Exception: java.lang.IllegalArgumentException: Invalid connection string.
+	at com.smatechnologies.msazure.storage.connector.impl.StorageConnectorImpl.processInformationRequest(StorageConnectorImpl.java:246)
+	at com.smatechnologies.msazure.storage.connector.StorageConnector.main(StorageConnector.java:106)
+Caused by: java.lang.Exception: java.lang.IllegalArgumentException: Invalid connection string.
+	at com.smatechnologies.msazure.storage.connector.impl.AzureStorageImpl.getContainerBlobList(AzureStorageImpl.java:213)
+	at com.smatechnologies.msazure.storage.connector.impl.StorageConnectorImpl.processInformationRequest(StorageConnectorImpl.java:235)
+	... 1 more
+Caused by: java.lang.IllegalArgumentException: Invalid connection string.
+	at com.azure.storage.common.implementation.connectionstring.ConnectionSettings.fromConnectionString(ConnectionSettings.java:81)
+	at com.azure.storage.common.implementation.connectionstring.StorageConnectionString.create(StorageConnectionString.java:105)
+	at com.azure.storage.blob.BlobServiceClientBuilder.connectionString(BlobServiceClientBuilder.java:204)
+	at com.smatechnologies.msazure.storage.connector.impl.AzureStorageImpl.getContainerBlobList(AzureStorageImpl.java:146)
+	... 2 more
+ 
+[20-05-08 15:28:22.020] [INFO ] (EncryptValue                 37) --------------------------------------------------------------------- 
+[20-05-08 15:28:22.027] [INFO ] (EncryptValue                 38) EncryptValue          : Version 19.1.02 
+[20-05-08 15:28:22.028] [INFO ] (EncryptValue                 39) --------------------------------------------------------------------- 
+[20-05-08 15:28:22.028] [INFO ] (EncryptValue                 40) -v  (value)           : DefaultEndpointsProtocol=https;AccountName=bvhtest;AccountKey=7dQZrpv/gZN6sn6P8kPbzNj1DefOSxWVcJmBsoCLXvdjCfOWfMDwtHlMyzOzropwkzSHucAk5Ca5kpwS/blcOw==;EndpointSuffix=core.windows.net 
+[20-05-08 15:28:22.028] [INFO ] (EncryptValue                 41) --------------------------------------------------------------------- 
+[20-05-08 15:28:22.034] [INFO ] (EncryptValue                 44) ev : 5247566d59585673644556755a48427661573530633142796233527659323973505768306448427a4f30466a59323931626e524f5957316c50574a326148526c6333513751574e6a623356756445746c655430335a464661636e42324c326461546a5a7a626a5a514f477451596e704f616a46455a575a5055336858566d4e4b62554a7a62304e4d57485a6b616b4e6d5431646d545552336445687354586c365433707962334233613370545348566a5157733151324531613342335579396962474e50647a30394f3056755a484276615735305533566d5a6d6c3450574e76636d557564326c755a473933637935755a58513d 
+[20-05-08 15:28:22.034] [INFO ] (EncryptValue                 45) --------------------------------------------------------------------- 
+[20-05-08 15:30:24.871] [INFO ] (StorageConnector             65) ------------------------------------------------------------------------------------------------------- 
+[20-05-08 15:30:24.876] [INFO ] (StorageConnector             66) Storage Connector                    : Version 19.1.02 
+[20-05-08 15:30:24.876] [INFO ] (StorageConnector             67) ------------------------------------------------------------------------------------------------------- 
+[20-05-08 15:30:24.876] [INFO ] (StorageConnector             73) -f   (function)                      : information 
+[20-05-08 15:30:24.876] [INFO ] (StorageConnector             74) -o   (operation)                     : blobs 
+[20-05-08 15:30:24.877] [INFO ] (StorageConnector             75) -sa  (storage account)               : bvhtest 
+[20-05-08 15:30:24.878] [INFO ] (StorageConnector            101) -cn  (container name)                : ctest01 
+[20-05-08 15:30:24.878] [INFO ] (StorageConnector            104) -fn  (file name)                     : ALL 
+[20-05-08 15:30:24.891] [INFO ] (AzureStorageImpl            143) DEBUG : Get list of blobs (ALL) in container (ctest01) for storage account (bvhtest) 
+[20-05-08 15:30:25.184] [DEBUG] (InternalLoggerFactory        43) Using SLF4J as the default logging framework 
+[20-05-08 15:30:25.226] [DEBUG] (PlatformDependent           985) Platform: Windows 
+[20-05-08 15:30:25.230] [DEBUG] (PlatformDependent0          395) -Dio.netty.noUnsafe: false 
+[20-05-08 15:30:25.234] [DEBUG] (PlatformDependent0          851) Java version: 11 
+[20-05-08 15:30:25.239] [DEBUG] (PlatformDependent0          120) sun.misc.Unsafe.theUnsafe: available 
+[20-05-08 15:30:25.241] [DEBUG] (PlatformDependent0          144) sun.misc.Unsafe.copyMemory: available 
+[20-05-08 15:30:25.247] [DEBUG] (PlatformDependent0          182) java.nio.Buffer.address: available 
+[20-05-08 15:30:25.251] [DEBUG] (PlatformDependent0          252) direct buffer constructor: unavailable java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
+	at io.netty.util.internal.ReflectionUtil.trySetAccessible(ReflectionUtil.java:31)
+	at io.netty.util.internal.PlatformDependent0$4.run(PlatformDependent0.java:224)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:218)
+	at io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:272)
+	at io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:92)
+	at io.netty.util.ConstantPool.<init>(ConstantPool.java:32)
+	at io.netty.channel.ChannelOption$1.<init>(ChannelOption.java:35)
+	at io.netty.channel.ChannelOption.<clinit>(ChannelOption.java:35)
+	at reactor.netty.tcp.TcpClient.<clinit>(TcpClient.java:617)
+	at reactor.netty.http.client.HttpClient.<clinit>(HttpClient.java:940)
+	at com.azure.core.http.netty.NettyAsyncHttpClientBuilder.build(NettyAsyncHttpClientBuilder.java:51)
+	at com.azure.core.http.netty.implementation.ReactorNettyClientProvider.createInstance(ReactorNettyClientProvider.java:14)
+	at com.azure.core.implementation.http.HttpClientProviders.createInstance(HttpClientProviders.java:36)
+	at com.azure.core.http.HttpClient.createDefault(HttpClient.java:27)
+	at com.azure.core.http.HttpPipelineBuilder.build(HttpPipelineBuilder.java:61)
+	at com.azure.storage.blob.implementation.util.BuilderHelper.buildPipeline(BuilderHelper.java:82)
+	at com.azure.storage.blob.BlobServiceClientBuilder.buildAsyncClient(BlobServiceClientBuilder.java:90)
+	at com.azure.storage.blob.BlobServiceClientBuilder.buildClient(BlobServiceClientBuilder.java:82)
+	at com.smatechnologies.msazure.storage.connector.impl.AzureStorageImpl.getContainerBlobList(AzureStorageImpl.java:146)
+	at com.smatechnologies.msazure.storage.connector.impl.StorageConnectorImpl.processInformationRequest(StorageConnectorImpl.java:235)
+	at com.smatechnologies.msazure.storage.connector.StorageConnector.main(StorageConnector.java:106)
+
+[20-05-08 15:30:25.255] [DEBUG] (PlatformDependent0          313) java.nio.Bits.unaligned: available, true 
+[20-05-08 15:30:25.256] [DEBUG] (PlatformDependent0          372) jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$6 cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to unnamed module @5a85c92
+	at java.base/jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:361)
+	at java.base/java.lang.reflect.AccessibleObject.checkAccess(AccessibleObject.java:591)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:558)
+	at io.netty.util.internal.PlatformDependent0$6.run(PlatformDependent0.java:334)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:325)
+	at io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:272)
+	at io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:92)
+	at io.netty.util.ConstantPool.<init>(ConstantPool.java:32)
+	at io.netty.channel.ChannelOption$1.<init>(ChannelOption.java:35)
+	at io.netty.channel.ChannelOption.<clinit>(ChannelOption.java:35)
+	at reactor.netty.tcp.TcpClient.<clinit>(TcpClient.java:617)
+	at reactor.netty.http.client.HttpClient.<clinit>(HttpClient.java:940)
+	at com.azure.core.http.netty.NettyAsyncHttpClientBuilder.build(NettyAsyncHttpClientBuilder.java:51)
+	at com.azure.core.http.netty.implementation.ReactorNettyClientProvider.createInstance(ReactorNettyClientProvider.java:14)
+	at com.azure.core.implementation.http.HttpClientProviders.createInstance(HttpClientProviders.java:36)
+	at com.azure.core.http.HttpClient.createDefault(HttpClient.java:27)
+	at com.azure.core.http.HttpPipelineBuilder.build(HttpPipelineBuilder.java:61)
+	at com.azure.storage.blob.implementation.util.BuilderHelper.buildPipeline(BuilderHelper.java:82)
+	at com.azure.storage.blob.BlobServiceClientBuilder.buildAsyncClient(BlobServiceClientBuilder.java:90)
+	at com.azure.storage.blob.BlobServiceClientBuilder.buildClient(BlobServiceClientBuilder.java:82)
+	at com.smatechnologies.msazure.storage.connector.impl.AzureStorageImpl.getContainerBlobList(AzureStorageImpl.java:146)
+	at com.smatechnologies.msazure.storage.connector.impl.StorageConnectorImpl.processInformationRequest(StorageConnectorImpl.java:235)
+	at com.smatechnologies.msazure.storage.connector.StorageConnector.main(StorageConnector.java:106)
+
+[20-05-08 15:30:25.256] [DEBUG] (PlatformDependent0          385) java.nio.DirectByteBuffer.<init>(long, int): unavailable 
+[20-05-08 15:30:25.257] [DEBUG] (PlatformDependent           1028) sun.misc.Unsafe: available 
+[20-05-08 15:30:25.317] [DEBUG] (PlatformDependent           1128) maxDirectMemory: 4263510016 bytes (maybe) 
+[20-05-08 15:30:25.318] [DEBUG] (PlatformDependent           1147) -Dio.netty.tmpdir: C:\Users\BVANHI~1\AppData\Local\Temp (java.io.tmpdir) 
+[20-05-08 15:30:25.318] [DEBUG] (PlatformDependent           1226) -Dio.netty.bitMode: 64 (sun.arch.data.model) 
+[20-05-08 15:30:25.320] [DEBUG] (PlatformDependent           173) -Dio.netty.maxDirectMemory: -1 bytes 
+[20-05-08 15:30:25.321] [DEBUG] (PlatformDependent           180) -Dio.netty.uninitializedArrayAllocationThreshold: -1 
+[20-05-08 15:30:25.324] [DEBUG] (CleanerJava9                 71) java.nio.ByteBuffer.cleaner(): available 
+[20-05-08 15:30:25.324] [DEBUG] (PlatformDependent           200) -Dio.netty.noPreferDirect: false 
+[20-05-08 15:30:25.327] [DEBUG] (NetUtil                     139) -Djava.net.preferIPv4Stack: false 
+[20-05-08 15:30:25.327] [DEBUG] (NetUtil                     140) -Djava.net.preferIPv6Addresses: false 
+[20-05-08 15:30:25.860] [DEBUG] (NetUtil                     224) Loopback interface: lo (Software Loopback Interface 1, 127.0.0.1) 
+[20-05-08 15:30:25.861] [DEBUG] (NetUtil                     289) Failed to get SOMAXCONN from sysctl and file \proc\sys\net\core\somaxconn. Default: 200 
+[20-05-08 15:30:25.870] [DEBUG] (Loggers$LoggerFactory       249) Using Slf4j logging framework 
+[20-05-08 15:30:25.887] [DEBUG] (TcpResources                254) [http] resources will use the default LoopResources: DefaultLoopResources {prefix=reactor-http, daemon=true, selectCount=4, workerCount=4} 
+[20-05-08 15:30:25.887] [DEBUG] (TcpResources                254) [http] resources will use the default ConnectionProvider: PooledConnectionProvider {name=http, poolFactory=reactor.netty.resources.ConnectionProvider$$Lambda$118/0x000000080026f440@12bcd0c0} 
+[20-05-08 15:30:26.861] [DEBUG] (DefaultLoopEpoll            249) Default Epoll support : false 
+[20-05-08 15:30:26.862] [DEBUG] (DefaultLoopKQueue           249) Default KQueue support : false 
+[20-05-08 15:30:26.871] [DEBUG] (MultithreadEventLoopGroup    44) -Dio.netty.eventLoopThreads: 8 
+[20-05-08 15:30:26.889] [DEBUG] (InternalThreadLocalMap       54) -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024 
+[20-05-08 15:30:26.889] [DEBUG] (InternalThreadLocalMap       57) -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096 
+[20-05-08 15:30:26.896] [DEBUG] (NioEventLoop                106) -Dio.netty.noKeySetOptimization: false 
+[20-05-08 15:30:26.897] [DEBUG] (NioEventLoop                107) -Dio.netty.selectorAutoRebuildThreshold: 512 
+[20-05-08 15:30:26.903] [DEBUG] (PlatformDependent           890) org.jctools-core.MpscChunkedArrayQueue: available 
+[20-05-08 15:30:28.005] [DEBUG] (OpenSsl                     124) netty-tcnative not in the classpath; OpenSslEngine will be unavailable. 
+[20-05-08 15:30:28.149] [DEBUG] (JdkSslContext                96) Default protocols (JDK): [TLSv1.2, TLSv1.1, TLSv1]  
+[20-05-08 15:30:28.149] [DEBUG] (JdkSslContext                97) Default cipher suites (JDK): [TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_256_CBC_SHA, TLS_AES_128_GCM_SHA256, TLS_AES_256_GCM_SHA384] 
+[20-05-08 15:30:28.187] [DEBUG] (ResourceLeakDetector        129) -Dio.netty.leakDetection.level: simple 
+[20-05-08 15:30:28.187] [DEBUG] (ResourceLeakDetector        130) -Dio.netty.leakDetection.targetRecords: 4 
+[20-05-08 15:30:28.198] [DEBUG] (PooledConnectionProvider    254) Creating new client pool [http] for bvhtest.blob.core.windows.net:443 
+[20-05-08 15:30:28.248] [DEBUG] (DefaultChannelId             79) -Dio.netty.processId: 38944 (auto-detected) 
+[20-05-08 15:30:28.839] [DEBUG] (DefaultChannelId            101) -Dio.netty.machineId: 00:50:56:ff:fe:c0:00:01 (auto-detected) 
+[20-05-08 15:30:28.866] [DEBUG] (PooledByteBufAllocator      142) -Dio.netty.allocator.numHeapArenas: 8 
+[20-05-08 15:30:28.867] [DEBUG] (PooledByteBufAllocator      143) -Dio.netty.allocator.numDirectArenas: 8 
+[20-05-08 15:30:28.868] [DEBUG] (PooledByteBufAllocator      145) -Dio.netty.allocator.pageSize: 8192 
+[20-05-08 15:30:28.868] [DEBUG] (PooledByteBufAllocator      150) -Dio.netty.allocator.maxOrder: 11 
+[20-05-08 15:30:28.869] [DEBUG] (PooledByteBufAllocator      154) -Dio.netty.allocator.chunkSize: 16777216 
+[20-05-08 15:30:28.870] [DEBUG] (PooledByteBufAllocator      155) -Dio.netty.allocator.tinyCacheSize: 512 
+[20-05-08 15:30:28.870] [DEBUG] (PooledByteBufAllocator      156) -Dio.netty.allocator.smallCacheSize: 256 
+[20-05-08 15:30:28.871] [DEBUG] (PooledByteBufAllocator      157) -Dio.netty.allocator.normalCacheSize: 64 
+[20-05-08 15:30:28.871] [DEBUG] (PooledByteBufAllocator      158) -Dio.netty.allocator.maxCachedBufferCapacity: 32768 
+[20-05-08 15:30:28.872] [DEBUG] (PooledByteBufAllocator      159) -Dio.netty.allocator.cacheTrimInterval: 8192 
+[20-05-08 15:30:28.872] [DEBUG] (PooledByteBufAllocator      160) -Dio.netty.allocator.cacheTrimIntervalMillis: 0 
+[20-05-08 15:30:28.872] [DEBUG] (PooledByteBufAllocator      161) -Dio.netty.allocator.useCacheForAllThreads: true 
+[20-05-08 15:30:28.873] [DEBUG] (PooledByteBufAllocator      162) -Dio.netty.allocator.maxCachedByteBuffersPerChunk: 1023 
+[20-05-08 15:30:28.881] [DEBUG] (ByteBufUtil                  85) -Dio.netty.allocator.type: pooled 
+[20-05-08 15:30:28.882] [DEBUG] (ByteBufUtil                  94) -Dio.netty.threadLocalDirectBufferSize: 0 
+[20-05-08 15:30:28.882] [DEBUG] (ByteBufUtil                  97) -Dio.netty.maxThreadLocalCharBufferSize: 16384 
+[20-05-08 15:30:28.896] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f] Created new pooled channel, now 1 active connections and 0 inactive connections 
+[20-05-08 15:30:28.926] [DEBUG] (AbstractByteBuf              62) -Dio.netty.buffer.checkAccessible: true 
+[20-05-08 15:30:28.927] [DEBUG] (AbstractByteBuf              63) -Dio.netty.buffer.checkBounds: true 
+[20-05-08 15:30:28.928] [DEBUG] (ResourceLeakDetectorFactory 195) Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@1f07a000 
+[20-05-08 15:30:28.952] [DEBUG] (SslProvider                 254) [id: 0x69eb0e9f] SSL enabled using engine SSLEngineImpl and SNI bvhtest.blob.core.windows.net:443 
+[20-05-08 15:30:28.958] [DEBUG] (BootstrapHandlers           254) [id: 0x69eb0e9f] Initialized pipeline DefaultChannelPipeline{(reactor.left.sslHandler = io.netty.handler.ssl.SslHandler), (reactor.left.sslReader = reactor.netty.tcp.SslProvider$SslReadHandler), (BootstrapHandlers$BootstrapInitializerHandler#0 = reactor.netty.channel.BootstrapHandlers$BootstrapInitializerHandler), (reactor.left.httpCodec = io.netty.handler.codec.http.HttpClientCodec), (reactor.right.reactiveBridge = reactor.netty.channel.ChannelOperationsHandler)} 
+[20-05-08 15:30:29.149] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Channel connected, now 1 active connections and 0 inactive connections 
+[20-05-08 15:30:29.207] [DEBUG] (Recycler                     96) -Dio.netty.recycler.maxCapacityPerThread: 4096 
+[20-05-08 15:30:29.208] [DEBUG] (Recycler                     97) -Dio.netty.recycler.maxSharedCapacityFactor: 2 
+[20-05-08 15:30:29.208] [DEBUG] (Recycler                     98) -Dio.netty.recycler.linkCapacity: 16 
+[20-05-08 15:30:29.208] [DEBUG] (Recycler                     99) -Dio.netty.recycler.ratio: 8 
+[20-05-08 15:30:29.623] [DEBUG] (SslHandler                  1748) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] HANDSHAKEN: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 
+[20-05-08 15:30:29.624] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] onStateChange(PooledConnection{channel=[id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443]}, [connected]) 
+[20-05-08 15:30:29.644] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] onStateChange(GET{uri=/, connection=PooledConnection{channel=[id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443]}}, [configured]) 
+[20-05-08 15:30:29.646] [DEBUG] (HttpClientConnect           254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Handler is being applied: {uri=https://bvhtest.blob.core.windows.net/?comp=list, method=GET} 
+[20-05-08 15:30:29.661] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] onStateChange(GET{uri=/?comp=list, connection=PooledConnection{channel=[id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443]}}, [request_sent]) 
+[20-05-08 15:30:29.811] [DEBUG] (HttpClientOperations        254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Received response (auto-read:false) : [Transfer-Encoding=chunked, Content-Type=application/xml, Server=Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0, x-ms-request-id=0ffe4d21-b01e-00c4-6a3c-253e0c000000, x-ms-client-request-id=ec56d813-0292-4b2a-8ff8-cd4a8d72ff85, x-ms-version=2019-02-02, Date=Fri, 08 May 2020 13:27:40 GMT] 
+[20-05-08 15:30:29.812] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] onStateChange(GET{uri=/?comp=list, connection=PooledConnection{channel=[id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443]}}, [response_received]) 
+[20-05-08 15:30:29.858] [DEBUG] (FluxReceive                 254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Subscribing inbound receiver [pending: 0, cancelled:false, inboundDone: false] 
+[20-05-08 15:30:29.877] [DEBUG] (HttpClientOperations        249) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Received last HTTP packet 
+[20-05-08 15:30:30.174] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] onStateChange(GET{uri=/?comp=list, connection=PooledConnection{channel=[id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443]}}, [disconnecting]) 
+[20-05-08 15:30:30.179] [DEBUG] (PooledConnectionProvider    249) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Releasing channel 
+[20-05-08 15:30:30.182] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Channel cleaned, now 0 active connections and 1 inactive connections 
+[20-05-08 15:30:30.228] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Channel acquired, now 1 active connections and 0 inactive connections 
+[20-05-08 15:30:30.229] [DEBUG] (HttpClientConnect           254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Handler is being applied: {uri=https://bvhtest.blob.core.windows.net/ctest01?include=&restype=container&comp=list, method=GET} 
+[20-05-08 15:30:30.230] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] onStateChange(GET{uri=/ctest01?include=&restype=container&comp=list, connection=PooledConnection{channel=[id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443]}}, [request_sent]) 
+[20-05-08 15:30:30.371] [DEBUG] (HttpClientOperations        254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Received response (auto-read:false) : [Transfer-Encoding=chunked, Content-Type=application/xml, Server=Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0, x-ms-request-id=0ffe4eba-b01e-00c4-563c-253e0c000000, x-ms-client-request-id=a48fbe15-1f90-4ea4-90f6-22a57016036d, x-ms-version=2019-02-02, Date=Fri, 08 May 2020 13:27:40 GMT] 
+[20-05-08 15:30:30.372] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] onStateChange(GET{uri=/ctest01?include=&restype=container&comp=list, connection=PooledConnection{channel=[id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443]}}, [response_received]) 
+[20-05-08 15:30:30.373] [DEBUG] (FluxReceive                 254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Subscribing inbound receiver [pending: 0, cancelled:false, inboundDone: false] 
+[20-05-08 15:30:30.494] [DEBUG] (HttpClientOperations        249) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Received last HTTP packet 
+[20-05-08 15:30:30.556] [INFO ] (AzureStorageImpl            195) DEBUG : Adding blob (Arr001.dat) to container (ctest01) list 
+[20-05-08 15:30:30.556] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] onStateChange(GET{uri=/ctest01?include=&restype=container&comp=list, connection=PooledConnection{channel=[id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443]}}, [disconnecting]) 
+[20-05-08 15:30:30.557] [INFO ] (AzureStorageImpl            195) DEBUG : Adding blob (Data001.dat) to container (ctest01) list 
+[20-05-08 15:30:30.557] [DEBUG] (PooledConnectionProvider    249) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Releasing channel 
+[20-05-08 15:30:30.557] [INFO ] (AzureStorageImpl            195) DEBUG : Adding blob (Data002.dat) to container (ctest01) list 
+[20-05-08 15:30:30.557] [INFO ] (AzureStorageImpl            195) DEBUG : Adding blob (Data003.dat) to container (ctest01) list 
+[20-05-08 15:30:30.557] [DEBUG] (PooledConnectionProvider    254) [id: 0x69eb0e9f, L:/192.168.178.50:56861 - R:bvhtest.blob.core.windows.net/52.239.150.170:443] Channel cleaned, now 0 active connections and 1 inactive connections 
+[20-05-08 15:30:30.557] [INFO ] (AzureStorageImpl            195) DEBUG : Adding blob (Data004.dat) to container (ctest01) list 
+[20-05-08 15:30:30.557] [INFO ] (AzureStorageImpl            195) DEBUG : Adding blob (Data005.dat) to container (ctest01) list 
+[20-05-08 15:30:30.557] [INFO ] (AzureStorageImpl            195) DEBUG : Adding blob (file001.txt) to container (ctest01) list 
+[20-05-08 15:30:30.558] [INFO ] (AzureStorageImpl            195) DEBUG : Adding blob (file002.txt) to container (ctest01) list 
+[20-05-08 15:30:30.558] [INFO ] (AzureStorageImpl            195) DEBUG : Adding blob (file300.txt) to container (ctest01) list 
+[20-05-08 15:30:30.559] [INFO ] (AzureStorageImpl            195) DEBUG : Adding blob (file400.txt) to container (ctest01) list 
+[20-05-08 15:30:30.559] [INFO ] (AzureStorageImpl            195) DEBUG : Adding blob (file500.txt) to container (ctest01) list 
+[20-05-08 15:30:30.559] [INFO ] (StorageConnectorImpl        238) Blob      : ---------------------------------------------------------------------------- 
+[20-05-08 15:30:30.559] [INFO ] (StorageConnectorImpl        238) Blob      : Container : ctest01 -------------------------------------------------------- 
+[20-05-08 15:30:30.560] [INFO ] (StorageConnectorImpl        238) Blob      : Blob      : Arr001.dat 
+[20-05-08 15:30:30.560] [INFO ] (StorageConnectorImpl        238) Blob      : Blob      : Data001.dat 
+[20-05-08 15:30:30.560] [INFO ] (StorageConnectorImpl        238) Blob      : Blob      : Data002.dat 
+[20-05-08 15:30:30.560] [INFO ] (StorageConnectorImpl        238) Blob      : Blob      : Data003.dat 
+[20-05-08 15:30:30.560] [INFO ] (StorageConnectorImpl        238) Blob      : Blob      : Data004.dat 
+[20-05-08 15:30:30.560] [INFO ] (StorageConnectorImpl        238) Blob      : Blob      : Data005.dat 
+[20-05-08 15:30:30.560] [INFO ] (StorageConnectorImpl        238) Blob      : Blob      : file001.txt 
+[20-05-08 15:30:30.561] [INFO ] (StorageConnectorImpl        238) Blob      : Blob      : file002.txt 
+[20-05-08 15:30:30.561] [INFO ] (StorageConnectorImpl        238) Blob      : Blob      : file300.txt 
+[20-05-08 15:30:30.561] [INFO ] (StorageConnectorImpl        238) Blob      : Blob      : file400.txt 
+[20-05-08 15:30:30.561] [INFO ] (StorageConnectorImpl        238) Blob      : Blob      : file500.txt 
+[20-05-08 15:30:30.561] [INFO ] (StorageConnectorImpl        238) Blob      : ---------------------------------------------------------------------------- 
