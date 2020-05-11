@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Azure Storage
+Bundle-SymbolicName: com.sma.ui.core.jobdetails.msazurestorage;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: SMA
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ com.sma.core,
+ com.sma.ui.core,
+ com.sma.ui.core.editors,
+ com.sma.ui.core.jobdetails,
+ com.sma.ui.core.widgets,
+ com.sma.ui.core.jobdetails.windows
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy

@@ -3,3 +3,7 @@ connector/classpath
 connector/project
 connector/Connector.config
 connector/dependendency-reduced-pom.xml
+emplugins/com.sma.ui.core.jobdetails.msazurestorage/bin
+emplugins/com.sma.ui.core.jobdetails.msazurestorage/.classpath
+emplugins/com.sma.ui.core.jobdetails.msazurestorage/.project
+
