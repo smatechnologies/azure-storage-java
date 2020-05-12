@@ -3,7 +3,6 @@ log/
 .classpath
 .project
 .settings
-Connector.config
 dependency-reduced-pom.xml
 emplugins/com.sma.ui.core.jobdetails.msazurestorage/bin
 emplugins/com.sma.ui.core.jobdetails.msazurestorage/.classpath
