@@ -186,4 +186,4 @@ The AzureStorage connector provides a Job Sub-Type that can be used to simplify 
 
 When using the Job Sub-Type, fill in the Account name (this must be a name defined in a STORAGE definition in the Connector.config file.
 
-Select the Task from the drop-down list and enter the requierd values. Only values associated with the task will be enabled. Once a task has been saved, the task type cannot be changed.
+Select the Task from the drop-down list and enter the required values. Only values associated with the task will be enabled. Once a task has been saved, the task type cannot be changed.

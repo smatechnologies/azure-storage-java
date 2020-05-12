@@ -1,5 +1,19 @@
 # Azure Storage Connector
-OpCon connector to interact with files in Microsoft Azure Storage.
+Is an OpCon connector that can interact with blobs (files) in Microsoft Azure Storage.
+![diagrm](/docs/images/Connector_overview.png)
+
+The job definitions are entered as Windows jobs using the Azure Storage Job Sub-Type. When the job is scheduled by OpCon the arguments are passed to the connector and a completion code is returned.
+
+The connectors supports the following tasks to manage coantainers and blobs (files).
+
+- **Create Container**: creates a container in the storage account.
+- **Delete Container**: deletes a container(s) from the storage account (supports wild cards ? and *).
+- **List Container**: lists container(s) in the storage account (supports wild cards ? and *).
+- **File Arrival**: monitors a container for the arrival of a blob (file).
+- **File Delete**: deletes a blob(s) (file) from the container (supports wild cards ? and *).
+- **File Download**: downloads a blob(s) (file) from the container to local storage (supports wild cards ? and *).
+- **File Download**: downloads a blob(s) (file) from the container to local storage (supports wild cards ? and *).
+- **File Upload**: uploads a blob(s) (file) from local storage to the container (supports wild cards ? and *).
 
 # Prerequisites
 - Microsoft Azure Account
@@ -7,47 +21,7 @@ OpCon connector to interact with files in Microsoft Azure Storage.
 
 # Instructions
 
-Provides following functions to manage containers and files.
- 
-Supports the following arguments:
-- **-sa**: storage account name
-- **-t**: task - task action, value:
-  - **containercreate**: creates a container in the storage account
-  - **containerdelete**: deletes a container in the storage account
-  - **containerlist**: lists containers in the storage account
-  - **filedelete**: deletes a file in a container
-  - **filedownload**: downloads a file from the container to a local disk
-  - **filelist**: list blobs (files) in containers in the storage accoun
-  - **fileupload**: uploads a file from a local disk to a container
-- **-cn**: container name, used to define a container name associated with an action (supports * and ? wild cards)
-- **-fn**: file name, used to define a file name associated with an action (supports * and ? wild cards)
-- **-dir**: directory name, used to define upload or download directory name
-- **-ov**: overwrite, used to indicate that if file exists during file upload it canbe overwritten
-
-### Configuration:
-
-The **Connector.config** file contains information about connecting to storage account. 
-The \[STORAGE ACCOUNT\] section provides information about storage accounts that the connector can utilize.
-
-Possible to define multiple values where:
-- **name**: the name of a storage account
-- **connection string**: the connection string associated with the azure storage account 
-
-````
-[CONNECTOR]
-NAME=Azure Storage Connector
-DEBUG=OFF
-
-[STORAGE ACCOUNTS]
-STORAGE=<name>=<connection string>
-STORAGE=<name>=<connection string>
-STORAGE=<name>=<connection string>
-````
-example:
-````
-MSAzureStorage.exe -sa test -f operations -o containercreate -cn ctest01
-````
-
+For detailed information see the aszure-storage.md documentation.
 # Disclaimer
 No Support and No Warranty are provided by SMA Technologies for this project and related material. The use of this project's files is on your own risk.
 
