@@ -52,8 +52,8 @@ jobs:
           cp azure-storage-dist/AzureStorage.exe AzureStorage_Windows/
           cp azure-storage-dist/Encrypt.exe AzureStorage_Windows/
           cp azure-storage-dist/Connector.config AzureStorage_Windows/
-          cp azure-storage-dist/com.sma.ui.core.jobdetails.commvault_1.0.0.202003180712.jar AzureStorage_Windows/emplugins
-          cp documentation/AzureStorage.docx AzureStorage_Windows_Windows/
+          cp azure-storage-dist/com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar AzureStorage_Windows/emplugins
+          cp documentation/azure-storage.md AzureStorage_Windows_Windows/
           
       # Zip the folder that contains all binaries and configuration to run on Windows (including Java)    
       - name: Zip Windows Folder
@@ -71,7 +71,7 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: EncryptValue.exe
-          path: azure-storage-dist/EncryptValue.exe
+          path: azure-storage-dist/Encrypt.exe
 
       # Upload the AzureStorage_Windows.zip file as artifact
       - uses: actions/upload-artifact@v1
