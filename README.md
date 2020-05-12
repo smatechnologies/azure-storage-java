@@ -3,25 +3,22 @@ OpCon connector to interact with files in Microsoft Azure Storage.
 
 # Prerequisites
 - Microsoft Azure Account
-- Execution requires a /java directory that contains a java 1.8 binary to execute the connector
+- Execution requires a /java directory that contains a java 11 binary to execute the connector
 
 # Instructions
+
 Provides following functions to manage containers and files.
  
 Supports the following arguments:
 - **-sa**: storage account name
-- **-f**: function - group action, value:
-  - **operations** or **information**
-- **-o**: 
-  - action values for **operations** group action
-    - **containercreate**: creates a container in the storage account
-    - **containerdelete**: deletes a container in the storage account
-    - **filedelete**: deletes a file in a container
-    - **filedownload**: downloads a file from the container to a local disk
-    - **fileupload**: uploads a file from a local disk to a container
-  - action values for **information** group action
-    - **containers**: lists containers in the storage account
-    - **blobs**: list blobs in containers in the storage account
+- **-t**: task - task action, value:
+  - **containercreate**: creates a container in the storage account
+  - **containerdelete**: deletes a container in the storage account
+  - **containerlist**: lists containers in the storage account
+  - **filedelete**: deletes a file in a container
+  - **filedownload**: downloads a file from the container to a local disk
+  - **filelist**: list blobs (files) in containers in the storage accoun
+  - **fileupload**: uploads a file from a local disk to a container
 - **-cn**: container name, used to define a container name associated with an action (supports * and ? wild cards)
 - **-fn**: file name, used to define a file name associated with an action (supports * and ? wild cards)
 - **-dir**: directory name, used to define upload or download directory name

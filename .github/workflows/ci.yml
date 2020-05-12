@@ -1,0 +1,121 @@
+# Workflow triggering
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+
+name: azure-storage-java
+
+jobs:
+  ###########
+  # PACKAGE #
+  ###########
+  Job_Package:
+    runs-on: ubuntu-latest
+    name: Package
+    
+    steps:
+      # Checkout the code
+      - name: Code checkout
+        uses: actions/checkout@master
+      
+      # Prepare the environment with Java 11
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with: 
+          java-version: 11
+          
+      # Build the maven project, output into ./azure-storage-dist/
+      - name: Build
+        run: mvn clean package
+      
+      ####################################
+      # Create Windows Distribution File #
+      ####################################        
+
+      # Download the latest GA OpenJDK JRE 11 from AdoptOpenJDK for Windows x64
+      - name: Get Java 11 JRE for Windows x64
+        run: curl -L "https://api.adoptopenjdk.net/v3/binary/latest/11/ga/windows/x64/jre/hotspot/normal/adoptopenjdk" --output java.zip
+        
+      # Extract Windows JRE
+      - name: Extract JRE into Java
+        run: 7z x java.zip -o./azure-storage-dist/
+      
+      # Prepare the Windows distribution folder for Zip
+      - name: Create Windows Folder
+        run: |
+          mkdir AzureStorage_Windows
+          mkdir AzureStorage_Windows/emplugins
+          mv azure-storage-dist/jdk-* AzureStorage_Windows/java
+          cp azure-storage-dist/AzureStorage.exe AzureStorage_Windows/
+          cp azure-storage-dist/EncryptValue.exe AzureStorage_Windows/
+          cp azure-storage-dist/Connector.config AzureStorage_Windows/
+          cp azure-storage-dist/com.sma.ui.core.jobdetails.commvault_1.0.0.202003180712.jar AzureStorage_Windows/emplugins
+          cp documentation/AzureStorage.docx AzureStorage_Windows_Windows/
+          
+      # Zip the folder that contains all binaries and configuration to run on Windows (including Java)    
+      - name: Zip Windows Folder
+        uses: montudor/action-zip@v0.1.0
+        with:
+          args: zip -qq -r ./AzureStorage_Windows.zip ./AzureStorage_Windows
+      
+      # Upload the AzureStorage.exe binary file as artifact
+      - uses: actions/upload-artifact@v1
+        with:
+          name: AzureStorage.exe
+          path: azure-storage-dist/AzureStorage.exe
+      
+      # Upload the ecryptvalue.exe binary file as artifact
+      - uses: actions/upload-artifact@v1
+        with:
+          name: EncryptValue.exe
+          path: azure-storage-dist/EncryptValue.exe
+
+      # Upload the AzureStorage_Windows.zip file as artifact
+      - uses: actions/upload-artifact@v1
+        with:
+          name: AzureStorage_Windows.zip
+          path: ./AzureStorage_Windows.zip
+          
+  #########################
+  # RELEASE | TAG CREATED #
+  #########################
+  Job_Release:
+    # Release - only ran when pushing new Tag starting with 'v'
+    if: startsWith(github.ref, 'refs/tags/v')
+    name: Release
+    needs: job_Package
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download Windows Package
+        uses: actions/download-artifact@v1
+        with:
+          name: AzureStorage_Windows.zip
+          path: ./
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+          prerelease: false
+      
+      # Upload the Windows Zip distribution to the newly created Release
+      - name: Upload Windows Release Asset
+        id: upload_release_asset_win
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: AzureStorage_Windows.zip
+          asset_name: AzureStorage_Windows.zip
+          asset_content_type: application/zip
