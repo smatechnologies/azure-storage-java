@@ -50,7 +50,7 @@ jobs:
           mkdir AzureStorage_Windows/emplugins
           mv azure-storage-dist/jdk-* AzureStorage_Windows/java
           cp azure-storage-dist/AzureStorage.exe AzureStorage_Windows/
-          cp azure-storage-dist/EncryptValue.exe AzureStorage_Windows/
+          cp azure-storage-dist/Encrypt.exe AzureStorage_Windows/
           cp azure-storage-dist/Connector.config AzureStorage_Windows/
           cp azure-storage-dist/com.sma.ui.core.jobdetails.commvault_1.0.0.202003180712.jar AzureStorage_Windows/emplugins
           cp documentation/AzureStorage.docx AzureStorage_Windows_Windows/
