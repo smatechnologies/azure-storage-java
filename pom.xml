@@ -4,7 +4,7 @@
 
   <groupId>com.smatechnologies</groupId>
   <artifactId>msazure.storage.connector</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <name>msazure.storage.connector</name>
