@@ -53,7 +53,7 @@ jobs:
           cp azure-storage-dist/Encrypt.exe AzureStorage_Windows/
           cp azure-storage-dist/Connector.config AzureStorage_Windows/
           cp azure-storage-dist/com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar AzureStorage_Windows/emplugins
-          cp docs/azure-storage.md AzureStorage_Windows_Windows/
+          cp docs/azure-storage.md AzureStorage_Windows/
           
       # Zip the folder that contains all binaries and configuration to run on Windows (including Java)    
       - name: Zip Windows Folder
