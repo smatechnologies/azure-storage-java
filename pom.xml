@@ -13,7 +13,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jcommander.version>1.72</jcommander.version>
     <java.version>11</java.version>
-	  <release.dir>${project.basedir}/azure-storage-dist</release.dir>
+	<release.dir>${project.basedir}/azure-storage-dist</release.dir>
   </properties>
   
   <repositories>
@@ -181,7 +181,7 @@
 	           			</goals>
 	           			<configuration>
 	             				<headerType>console</headerType>
-	             				<outfile>${release.dir}/Release/AzureStorage.exe</outfile>
+	             				<outfile>${release.dir}/AzureStorage.exe</outfile>
 	             				<jar>${project.build.directory}/${project.artifactId}.jar</jar> 
 			        		<classPath>
 			          			<mainClass>com.smatechnologies.msazure.storage.connector.StorageConnector</mainClass>
