@@ -76,8 +76,8 @@ jobs:
        # Upload the job sub-type binary file as artifact
       - uses: actions/upload-artifact@v1
         with:
-          name: com.sma.ui.core.jobdetails.msazurevm_1.0.0.202005121417.jar
-          path: connector/azure-vm-dist/com.sma.ui.core.jobdetails.msazurestorage_1.0.0.2020051010027.jar
+          name: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar
+          path: connector/azure-vm-dist/com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar
 
      # Upload the AzureStorage_Windows.zip file as artifact
       - uses: actions/upload-artifact@v1
