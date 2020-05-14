@@ -1,6 +1,5 @@
 connector/target/
 connector/log/
-connector/azure-storage-dist/
 connector/.classpath
 connector/.project
 connector/.settings
