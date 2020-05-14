@@ -27,9 +27,9 @@ jobs:
         with: 
           java-version: 11
           
-      # Build the maven project, output into ./azure-storage-dist/
+      # Build the maven project, output into ./connector/azure-storage-dist/
       - name: Build
-        run: mvn clean package
+        run: mvn clean package --file connector/pom.xml
       
       ####################################
       # Create Windows Distribution File #
@@ -41,18 +41,18 @@ jobs:
         
       # Extract Windows JRE
       - name: Extract JRE into Java
-        run: 7z x java.zip -o./azure-storage-dist/
+        run: 7z x java.zip -o./connector/azure-storage-dist/
       
       # Prepare the Windows distribution folder for Zip
       - name: Create Windows Folder
         run: |
           mkdir AzureStorage_Windows
           mkdir AzureStorage_Windows/emplugins
-          mv azure-storage-dist/jdk-* AzureStorage_Windows/java
-          cp azure-storage-dist/AzureStorage.exe AzureStorage_Windows/
-          cp azure-storage-dist/Encrypt.exe AzureStorage_Windows/
-          cp azure-storage-dist/Connector.config AzureStorage_Windows/
-          cp azure-storage-dist/com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar AzureStorage_Windows/emplugins
+          mv connector/azure-storage-dist/jdk-* AzureStorage_Windows/java
+          cp connector/azure-storage-dist/AzureStorage.exe AzureStorage_Windows/
+          cp connector/azure-storage-dist/Encrypt.exe AzureStorage_Windows/
+          cp connector/azure-storage-dist/Connector.config AzureStorage_Windows/
+          cp connector/azure-storage-dist/com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar AzureStorage_Windows/emplugins
           cp docs/azure-storage.md AzureStorage_Windows/
           
       # Zip the folder that contains all binaries and configuration to run on Windows (including Java)    
@@ -65,13 +65,13 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: AzureStorage.exe
-          path: azure-storage-dist/AzureStorage.exe
+          path: connector/azure-storage-dist/AzureStorage.exe
       
-      # Upload the ecryptvalue.exe binary file as artifact
+      # Upload the ecrypt.exe binary file as artifact
       - uses: actions/upload-artifact@v1
         with:
-          name: EncryptValue.exe
-          path: azure-storage-dist/Encrypt.exe
+          name: Encrypt.exe
+          path: connector/azure-storage-dist/Encrypt.exe
 
       # Upload the AzureStorage_Windows.zip file as artifact
       - uses: actions/upload-artifact@v1
@@ -96,6 +96,12 @@ jobs:
           name: AzureStorage_Windows.zip
           path: ./
 
+      - name: Download job subtype
+        uses: actions/download-artifact@v1
+        with:
+          name: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar
+          path: ./
+
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/v')
         id: create_release
@@ -118,4 +124,16 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: AzureStorage_Windows.zip
           asset_name: AzureStorage_Windows.zip
+          asset_content_type: application/zip
+
+      # Upload the Job Subtype the newly created Release
+      - name: Upload JobSubtype Asset
+        id: upload_release_asset_subtype
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar
+          asset_name: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar
           asset_content_type: application/zip

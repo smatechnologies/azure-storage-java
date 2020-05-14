@@ -1,10 +1,10 @@
-target/
-log/
-azure-storage-dist/
-.classpath
-.project
-.settings
-dependency-reduced-pom.xml
+connector/target/
+connector/log/
+connector/azure-storage-dist/
+connector/.classpath
+connector/.project
+connector/.settings
+connector/dependency-reduced-pom.xml
 emplugins/com.sma.ui.core.jobdetails.msazurestorage/bin
 emplugins/com.sma.ui.core.jobdetails.msazurestorage/.classpath
 emplugins/com.sma.ui.core.jobdetails.msazurestorage/.project
