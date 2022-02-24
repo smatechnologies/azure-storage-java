@@ -52,7 +52,7 @@ jobs:
           cp connector/azure-storage-dist/AzureStorage.exe AzureStorage_Windows/
           cp connector/azure-storage-dist/Encrypt.exe AzureStorage_Windows/
           cp connector/azure-storage-dist/Connector.config AzureStorage_Windows/
-          cp connector/azure-storage-dist/com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar AzureStorage_Windows/emplugins
+          cp connector/azure-storage-dist/com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202106110629.jar AzureStorage_Windows/emplugins
           cp docs/azure-storage.md AzureStorage_Windows/
           
       # Zip the folder that contains all binaries and configuration to run on Windows (including Java)    
@@ -76,8 +76,8 @@ jobs:
        # Upload the job sub-type binary file as artifact
       - uses: actions/upload-artifact@v1
         with:
-          name: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar
-          path: connector/azure-storage-dist/com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar
+          name: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202106110629.jar
+          path: connector/azure-storage-dist/com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202106110629.jar
 
      # Upload the AzureStorage_Windows.zip file as artifact
       - uses: actions/upload-artifact@v1
@@ -105,7 +105,7 @@ jobs:
       - name: Download job subtype
         uses: actions/download-artifact@v1
         with:
-          name: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar
+          name: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202106110629.jar
           path: ./
 
       - name: Create Release
@@ -140,6 +140,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar
-          asset_name: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202005101002.jar
+          asset_path: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202106110629.jar
+          asset_name: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202106110629.jar
           asset_content_type: application/zip
