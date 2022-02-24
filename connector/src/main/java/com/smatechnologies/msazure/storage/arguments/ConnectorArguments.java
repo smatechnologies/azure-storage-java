@@ -7,7 +7,9 @@ public class ConnectorArguments {
 	private static final String TaskDescriptionMsg = "(Required) The task to execute";
 	private static final String StorageAccountDescriptionMsg = "(Required) Storage Account name";
 	private static final String ContainerNameDescriptionMsg = "(Required) required for all tasks - the name of the container";
-	private static final String FileNameDescriptionMsg = "(Optional) required for filedelete, fileupload, filelist and filedownload functions - the name of the file";
+	private static final String ContainerPathDescriptionMsg = "(Optional) the path name of a file(s) within the container";
+	private static final String ContainerFileNameDescriptionMsg = "(Optional) required for filedelete, fileupload, filelist and filedownload functions - the name of the file in the container";
+	private static final String LocalFileNameDescriptionMsg = "(Optional) required for filedelete, fileupload, filelist and filedownload functions - the name of the file on the server";
 	private static final String FileDirectoryNameDescriptionMsg = "(Optional) required for fileupload and filedownload functions - the directory that contains the file or where the file should be placed";
 	private static final String FileUploadOverwriteMsg = "(Optional) if the file exists on upload, overwrite it (default value false)";
 	private static final String FileArrivalMaximumWaitMsg = "(Optional) The maximum time to wait for a file to Arrive in mins (default null - wait indefinitely)";
@@ -24,8 +26,14 @@ public class ConnectorArguments {
 	@Parameter(names="-cn", required=true, description = ContainerNameDescriptionMsg)
 	private String containerName = null;
 
-	@Parameter(names="-fn", description = FileNameDescriptionMsg)
-	private String fileName = null;
+	@Parameter(names="-cp", description = ContainerPathDescriptionMsg)
+	private String containerPath = null;
+
+	@Parameter(names="-cf", description = ContainerFileNameDescriptionMsg)
+	private String containerFileName = null;
+
+	@Parameter(names="-lf", description = LocalFileNameDescriptionMsg)
+	private String localFileName = null;
 
 	@Parameter(names="-di", description = FileDirectoryNameDescriptionMsg)
 	private String directoryName = null;
@@ -70,12 +78,28 @@ public class ConnectorArguments {
 		this.containerName = containerName;
 	}
 
-	public String getFileName() {
-		return fileName;
+	public String getContainerPath() {
+		return containerPath;
 	}
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
+	public void setContainerPath(String containerPath) {
+		this.containerPath = containerPath;
+	}
+
+	public String getContainerFileName() {
+		return containerFileName;
+	}
+
+	public void setContainerFileName(String containerFileName) {
+		this.containerFileName = containerFileName;
+	}
+
+	public String getLocalFileName() {
+		return localFileName;
+	}
+
+	public void setLocalFileName(String localFileName) {
+		this.localFileName = localFileName;
 	}
 
 	public String getDirectoryName() {

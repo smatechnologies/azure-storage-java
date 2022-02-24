@@ -60,9 +60,13 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 	private final String TASK_NAME = "Task";
 	private final String TASK_TOOLTIP = "The task to perform";
 	private final String CONTAINER_NAME = "Container Name";
-	private final String CONTAINER_TOOLTIP = "The name of the container associated with the task (supports wildcards * and ?)";
-	private final String FILE_NAME = "File Name";
-	private final String FILE_TOOLTIP = "The name of the file associated with the task (supports wildcards * and ?)";
+	private final String CONTAINER_NAME_TOOLTIP = "The name of the container associated with the task (supports wildcards * and ?)";
+	private final String CONTAINER_PATH = "Container Folder";
+	private final String CONTAINER_PATH_TOOLTIP = "The name of the path within the container where the file should be placed or extracted from";
+	private final String CONTAINER_FILE_NAME = "Container File Name";
+	private final String CONTAINER_FILE_NAME_TOOLTIP = "The name of the file associated in the container (supports wildcards * and ? for directory downloads and uploads) If wildcards used, local file name is invalid";
+	private final String LOCAL_FILE_NAME = "Local File Name";
+	private final String LOCAL_FILE_NAME_TOOLTIP = "The name of the local file (supports wildcards * and ? for directory downloads and uploads) If wildcards used, container file name is invalid";
 	private final String DIRECTORY_NAME = "Directory Name";
 	private final String DIRECTORY_TOOLTIP = "The name of the directory to upload the file(s) from or download file(s) to";
 	private final String OVERWRITE_NAME = "Overwrite";
@@ -86,8 +90,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 	private Label _taskLabel;
 	private ItemCombo _taskItemCombo;
 	private Text _containerNameText;
-	private Text _fileNameText;
+	private Text _containerPathText;
+	private Text _containerFileNameText;
 	private Text _directoryNameText;
+	private Text _localFileNameText;
 	private Button _overwriteCheckBox;
 	private Text _waitTimeText;
 	private Text _staticFileSizeTimeText;
@@ -166,16 +172,22 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 		_taskItemCombo.setToolTipText(TASK_TOOLTIP);
 
 		_containerNameText = JobUtil.createLabeledText(operationsGroup,CONTAINER_NAME,0,JobUtil.COLOR_BLUE,JobUtil.COLOR_LIGHT_GREEN, SWT.SINGLE | SWT.BORDER, 1);
-		_containerNameText.setToolTipText(CONTAINER_TOOLTIP);
+		_containerNameText.setToolTipText(CONTAINER_NAME_TOOLTIP);
 
-		_fileNameText = JobUtil.createLabeledText(operationsGroup,FILE_NAME,0,JobUtil.COLOR_BLUE,JobUtil.COLOR_LIGHT_GREEN, SWT.SINGLE | SWT.BORDER, 1);
-		_fileNameText.setToolTipText(FILE_TOOLTIP);
+		_containerPathText = JobUtil.createLabeledText(operationsGroup,CONTAINER_PATH,0,JobUtil.COLOR_BLUE,JobUtil.COLOR_LIGHT_GREEN, SWT.SINGLE | SWT.BORDER, 1);
+		_containerPathText.setToolTipText(CONTAINER_PATH_TOOLTIP);
+
+		_containerFileNameText = JobUtil.createLabeledText(operationsGroup,CONTAINER_FILE_NAME,0,JobUtil.COLOR_BLUE,JobUtil.COLOR_LIGHT_GREEN, SWT.SINGLE | SWT.BORDER, 1);
+		_containerFileNameText.setToolTipText(CONTAINER_FILE_NAME_TOOLTIP);
 		
 		Group fileUploadDownloadGroup = JobDetailsHelper.createGroup(_composite, "File Upload/Download options", 2, false);
 		fileUploadDownloadGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true));
 
 		_directoryNameText = JobUtil.createLabeledText(fileUploadDownloadGroup,DIRECTORY_NAME,0,JobUtil.COLOR_BLUE,JobUtil.COLOR_LIGHT_GREEN, SWT.SINGLE | SWT.BORDER, 1);
 		_directoryNameText.setToolTipText(DIRECTORY_TOOLTIP);
+
+		_localFileNameText = JobUtil.createLabeledText(fileUploadDownloadGroup,LOCAL_FILE_NAME,0,JobUtil.COLOR_BLUE,JobUtil.COLOR_LIGHT_GREEN, SWT.SINGLE | SWT.BORDER, 1);
+		_localFileNameText.setToolTipText(LOCAL_FILE_NAME_TOOLTIP);
 
 		_overwriteCheckBox = new Button(fileUploadDownloadGroup, SWT.CHECK);
 		_overwriteCheckBox.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 2, 1));
@@ -224,8 +236,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 		_storageAccountText.addKeyListener(new DirtyKeyAdapter(this));
 		_taskItemCombo.addSelectionListener(new DirtySelectionAdapter(this));
 		_containerNameText.addModifyListener(new DirtyModifyAdapter(this));
-		_fileNameText.addModifyListener(new DirtyModifyAdapter(this));
+		_containerPathText.addModifyListener(new DirtyModifyAdapter(this));
+		_containerFileNameText.addModifyListener(new DirtyModifyAdapter(this));
 		_directoryNameText.addModifyListener(new DirtyModifyAdapter(this));
+		_localFileNameText.addModifyListener(new DirtyModifyAdapter(this));
 		_overwriteCheckBox.addSelectionListener(new DirtySelectionAdapter(this));
 		_waitTimeText.addModifyListener(new DirtyModifyAdapter(this));
 		_staticFileSizeTimeText.addModifyListener(new DirtyModifyAdapter(this));
@@ -238,8 +252,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 
 				case containercreate:
 					_containerNameText.setEnabled(true);
-					_fileNameText.setEnabled(false);
+					_containerPathText.setEnabled(false);
+					_containerFileNameText.setEnabled(false);
 					_directoryNameText.setEnabled(false);
+					_localFileNameText.setEnabled(false);
 					_overwriteCheckBox.setEnabled(false);
 					_waitTimeText.setEnabled(false);
 					_staticFileSizeTimeText.setEnabled(false);
@@ -249,8 +265,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 					
 				case containerdelete:
 					_containerNameText.setEnabled(true);
-					_fileNameText.setEnabled(false);
+					_containerPathText.setEnabled(false);
+					_containerFileNameText.setEnabled(false);
 					_directoryNameText.setEnabled(false);
+					_localFileNameText.setEnabled(false);
 					_overwriteCheckBox.setEnabled(false);
 					_waitTimeText.setEnabled(false);
 					_staticFileSizeTimeText.setEnabled(false);
@@ -260,8 +278,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 
 				case containerlist:
 					_containerNameText.setEnabled(true);
-					_fileNameText.setEnabled(false);
+					_containerPathText.setEnabled(false);
+					_containerFileNameText.setEnabled(false);
 					_directoryNameText.setEnabled(false);
+					_localFileNameText.setEnabled(false);
 					_overwriteCheckBox.setEnabled(false);
 					_waitTimeText.setEnabled(false);
 					_staticFileSizeTimeText.setEnabled(false);
@@ -271,8 +291,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 
 				case filearrival:
 					_containerNameText.setEnabled(true);
-					_fileNameText.setEnabled(true);
+					_containerPathText.setEnabled(true);
+					_containerFileNameText.setEnabled(true);
 					_directoryNameText.setEnabled(false);
+					_localFileNameText.setEnabled(false);
 					_overwriteCheckBox.setEnabled(false);
 					_waitTimeText.setEnabled(true);
 					_staticFileSizeTimeText.setEnabled(true);
@@ -282,8 +304,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 
 				case filedelete:
 					_containerNameText.setEnabled(true);
-					_fileNameText.setEnabled(true);
+					_containerPathText.setEnabled(true);
+					_containerFileNameText.setEnabled(true);
 					_directoryNameText.setEnabled(false);
+					_localFileNameText.setEnabled(false);
 					_overwriteCheckBox.setEnabled(false);
 					_waitTimeText.setEnabled(false);
 					_staticFileSizeTimeText.setEnabled(false);
@@ -293,8 +317,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 
 				case filedownload:
 					_containerNameText.setEnabled(true);
-					_fileNameText.setEnabled(true);
+					_containerPathText.setEnabled(true);
+					_containerFileNameText.setEnabled(true);
 					_directoryNameText.setEnabled(true);
+					_localFileNameText.setEnabled(true);
 					_overwriteCheckBox.setEnabled(false);
 					_waitTimeText.setEnabled(false);
 					_staticFileSizeTimeText.setEnabled(false);
@@ -304,8 +330,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 
 				case filelist:
 					_containerNameText.setEnabled(true);
-					_fileNameText.setEnabled(true);
+					_containerPathText.setEnabled(true);
+					_containerFileNameText.setEnabled(true);
 					_directoryNameText.setEnabled(false);
+					_localFileNameText.setEnabled(false);
 					_overwriteCheckBox.setEnabled(false);
 					_waitTimeText.setEnabled(false);
 					_staticFileSizeTimeText.setEnabled(false);
@@ -315,8 +343,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 
 				case fileupload:
 					_containerNameText.setEnabled(true);
-					_fileNameText.setEnabled(true);
+					_containerPathText.setEnabled(true);
+					_containerFileNameText.setEnabled(true);
 					_directoryNameText.setEnabled(true);
+					_localFileNameText.setEnabled(true);
 					_overwriteCheckBox.setEnabled(true);
 					_waitTimeText.setEnabled(false);
 					_staticFileSizeTimeText.setEnabled(false);
@@ -346,8 +376,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 		_taskItemCombo.setSelection(MsAzureStorageEnums.Task.containerlist, true);
 		_taskItemCombo.removeItem(new ComboItem ("Unknown", MsAzureStorageEnums.Task.unknown));
 		_containerNameText.setText(SystemConstants.EMPTY_STRING);
-		_fileNameText.setText(SystemConstants.EMPTY_STRING);
+		_containerPathText.setText(SystemConstants.EMPTY_STRING);
+		_containerFileNameText.setText(SystemConstants.EMPTY_STRING);
 		_directoryNameText.setText(SystemConstants.EMPTY_STRING);
+		_localFileNameText.setText(SystemConstants.EMPTY_STRING);
 		_overwriteCheckBox.setSelection(false);
 		_waitTimeText.setText("0");
 		_staticFileSizeTimeText.setText("5");
@@ -357,8 +389,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 		_advancedExitCodeWidget.setDefaults();
 		
 		_containerNameText.setEnabled(true);
-		_fileNameText.setEnabled(false);
+		_containerPathText.setEnabled(false);
+		_containerFileNameText.setEnabled(false);
 		_directoryNameText.setEnabled(false);
+		_localFileNameText.setEnabled(false);
 		_overwriteCheckBox.setEnabled(false);
 		_waitTimeText.setEnabled(false);
 		_staticFileSizeTimeText.setEnabled(false);
@@ -391,14 +425,29 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 		builder.append(SystemConstants.QUOTE);
 		builder.append(SystemConstants.VERTICAL_TAB);
 		if(taskName.equalsIgnoreCase("containercreate")) {
-			builder = appendContainerName(builder, _containerNameText.getText());
+			builder.append(SystemConstants.SIGN_MINUS);
+			builder.append(MsAzureStorageConstants.CONTAINER_NAME_ARGUMENT);
+			builder.append(SystemConstants.VERTICAL_TAB);
+			builder.append(SystemConstants.QUOTE);
+			builder.append(_containerNameText.getText());
+			builder.append(SystemConstants.QUOTE);
+			builder.append(SystemConstants.VERTICAL_TAB);
 		} else if(taskName.equalsIgnoreCase("containerdelete")) {
 			builder = appendContainerName(builder, _containerNameText.getText());
 		} else if(taskName.equalsIgnoreCase("containerlist")) {
 			builder = appendContainerName(builder, _containerNameText.getText());
 		} else if(taskName.equalsIgnoreCase("filearrival")) {
 			builder = appendContainerName(builder, _containerNameText.getText());
-			builder = appendFileName(builder, _fileNameText.getText());
+			if(_containerPathText.getText().length() > 0) {
+				builder.append(SystemConstants.SIGN_MINUS);
+				builder.append(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT);
+				builder.append(SystemConstants.VERTICAL_TAB);
+				builder.append(SystemConstants.QUOTE);
+				builder.append(_containerPathText.getText());
+				builder.append(SystemConstants.QUOTE);
+				builder.append(SystemConstants.VERTICAL_TAB);
+			}
+			builder = appendContainerFileName(builder, _containerFileNameText.getText());
 			builder.append(SystemConstants.SIGN_MINUS);
 			builder.append(MsAzureStorageConstants.FILE_SIZE_STATIC_VALUE_ARGUMENT);
 			builder.append(SystemConstants.VERTICAL_TAB);
@@ -429,10 +478,32 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 			builder.append(SystemConstants.VERTICAL_TAB);
 		} else if(taskName.equalsIgnoreCase("filedelete")) {
 			builder = appendContainerName(builder, _containerNameText.getText());
-			builder = appendFileName(builder, _fileNameText.getText());
+			if(!_containerNameText.getText().equals(SystemConstants.ASTERISK)) {
+				if(_containerPathText.getText().length() > 0) {
+					builder.append(SystemConstants.SIGN_MINUS);
+					builder.append(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT);
+					builder.append(SystemConstants.VERTICAL_TAB);
+					builder.append(SystemConstants.QUOTE);
+					builder.append(_containerPathText.getText());
+					builder.append(SystemConstants.QUOTE);
+					builder.append(SystemConstants.VERTICAL_TAB);
+				}
+			}
+			builder = appendContainerFileName(builder, _containerFileNameText.getText());
 		} else if(taskName.equalsIgnoreCase("filedownload")) {
 			builder = appendContainerName(builder, _containerNameText.getText());
-			builder = appendFileName(builder, _fileNameText.getText());
+			if(!_containerNameText.getText().equals(SystemConstants.ASTERISK)) {
+				if(_containerPathText.getText().length() > 0) {
+					builder.append(SystemConstants.SIGN_MINUS);
+					builder.append(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT);
+					builder.append(SystemConstants.VERTICAL_TAB);
+					builder.append(SystemConstants.QUOTE);
+					builder.append(_containerPathText.getText());
+					builder.append(SystemConstants.QUOTE);
+					builder.append(SystemConstants.VERTICAL_TAB);
+				}
+			}
+			builder = appendContainerFileName(builder, _containerFileNameText.getText());
 			builder.append(SystemConstants.SIGN_MINUS);
 			builder.append(MsAzureStorageConstants.DIRECTORY_NAME_ARGUMENT);
 			builder.append(SystemConstants.VERTICAL_TAB);
@@ -440,12 +511,39 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 			builder.append(_directoryNameText.getText());
 			builder.append(SystemConstants.QUOTE);
 			builder.append(SystemConstants.VERTICAL_TAB);
+			if(_localFileNameText.getText().length() > 0) {
+				builder = appendLocalFileName(builder, _localFileNameText.getText());
+			}
 		} else if(taskName.equalsIgnoreCase("fileList")) {
 			builder = appendContainerName(builder, _containerNameText.getText());
-			builder = appendFileName(builder, _fileNameText.getText());
+			if(!_containerNameText.getText().equals(SystemConstants.ASTERISK)) {
+				if(_containerPathText.getText().length() > 0) {
+					builder.append(SystemConstants.SIGN_MINUS);
+					builder.append(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT);
+					builder.append(SystemConstants.VERTICAL_TAB);
+					builder.append(SystemConstants.QUOTE);
+					builder.append(_containerPathText.getText());
+					builder.append(SystemConstants.QUOTE);
+					builder.append(SystemConstants.VERTICAL_TAB);
+				}
+			}
+			builder = appendContainerFileName(builder, _containerFileNameText.getText());
 		} else {
 			builder = appendContainerName(builder, _containerNameText.getText());
-			builder = appendFileName(builder, _fileNameText.getText());
+			if(!_containerNameText.getText().equals(SystemConstants.ASTERISK)) {
+				if(_containerPathText.getText().length() > 0) {
+					builder.append(SystemConstants.SIGN_MINUS);
+					builder.append(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT);
+					builder.append(SystemConstants.VERTICAL_TAB);
+					builder.append(SystemConstants.QUOTE);
+					builder.append(_containerPathText.getText());
+					builder.append(SystemConstants.QUOTE);
+					builder.append(SystemConstants.VERTICAL_TAB);
+				}
+			}
+			if(_containerFileNameText.getText().length() > 0) {
+				builder = appendContainerFileName(builder, _containerFileNameText.getText());
+			}
 			builder.append(SystemConstants.SIGN_MINUS);
 			builder.append(MsAzureStorageConstants.DIRECTORY_NAME_ARGUMENT);
 			builder.append(SystemConstants.VERTICAL_TAB);
@@ -453,6 +551,7 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 			builder.append(_directoryNameText.getText());
 			builder.append(SystemConstants.QUOTE);
 			builder.append(SystemConstants.VERTICAL_TAB);
+			builder = appendLocalFileName(builder, _localFileNameText.getText());
 			if(_overwriteCheckBox.getSelection()) {
 				builder.append(SystemConstants.SIGN_MINUS);
 				builder.append(MsAzureStorageConstants.FILE_OVERWRITE_ARGUMENT);
@@ -481,13 +580,13 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 		return builder;
 	}
 	
-	private StringBuilder appendFileName(
+	private StringBuilder appendContainerFileName(
 			StringBuilder builder, 
 			String fileName
 			) {
 		
 		builder.append(SystemConstants.SIGN_MINUS);
-		builder.append(MsAzureStorageConstants.FILE_NAME_ARGUMENT);
+		builder.append(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT);
 		builder.append(SystemConstants.VERTICAL_TAB);
 		builder.append(SystemConstants.QUOTE);
 		if(fileName.equals(SystemConstants.ASTERISK)) {
@@ -499,7 +598,26 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 		builder.append(SystemConstants.VERTICAL_TAB);
 		return builder;
 	}
-	
+
+	private StringBuilder appendLocalFileName(
+			StringBuilder builder, 
+			String fileName
+			) {
+		
+		builder.append(SystemConstants.SIGN_MINUS);
+		builder.append(MsAzureStorageConstants.LOCAL_FILE_NAME_ARGUMENT);
+		builder.append(SystemConstants.VERTICAL_TAB);
+		builder.append(SystemConstants.QUOTE);
+		if(fileName.equals(SystemConstants.ASTERISK)) {
+			builder.append("ALL");
+		} else {
+			builder.append(fileName);
+		}
+		builder.append(SystemConstants.QUOTE);
+		builder.append(SystemConstants.VERTICAL_TAB);
+		return builder;
+	}
+
 	@Override
 	protected String getWorkingDirectory() {
 		// extract the location property from the commandline and display this is the 
@@ -564,13 +682,19 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 		options.addOption(MsAzureStorageConstants.POLL_INTERVAL_ARGUMENT, true, SystemConstants.EMPTY_STRING);
 		options.addOption(MsAzureStorageConstants.FILE_SIZE_STATIC_VALUE_ARGUMENT, true, SystemConstants.EMPTY_STRING);
 		options.addOption(MsAzureStorageConstants.FILE_OVERWRITE_ARGUMENT, false, SystemConstants.EMPTY_STRING);
+		options.addOption(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT, true, SystemConstants.EMPTY_STRING);
+		options.addOption(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT, true, SystemConstants.EMPTY_STRING);
+		options.addOption(MsAzureStorageConstants.LOCAL_FILE_NAME_ARGUMENT, true, SystemConstants.EMPTY_STRING);
 		
 		String[] arguments = CommandLineTokenizer.tokenize(commandLine, true);
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd = parser.parse(options, arguments);
 		String task = null;
 		String cname = null;
+		String cpath = null;
 		String fname = null;
+		String cfname = null;
+		String lfname = null;
 		
 		if(cmd.hasOption(MsAzureStorageConstants.ACCOUNT_NAME_ARGUMENT)) {
 			_storageAccountText.setText(removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.ACCOUNT_NAME_ARGUMENT)));
@@ -588,8 +712,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 					_containerNameText.setText(checkNameforAll(cname));
 				}
 				_containerNameText.setEnabled(true);
-				_fileNameText.setEnabled(false);
+				_containerPathText.setEnabled(false);
+				_containerFileNameText.setEnabled(false);
 				_directoryNameText.setEnabled(false);
+				_localFileNameText.setEnabled(false);
 				_overwriteCheckBox.setEnabled(false);
 				_waitTimeText.setEnabled(false);
 				_staticFileSizeTimeText.setEnabled(false);
@@ -603,8 +729,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 					_containerNameText.setText(checkNameforAll(cname));
 				}
 				_containerNameText.setEnabled(true);
-				_fileNameText.setEnabled(false);
+				_containerPathText.setEnabled(false);
+				_containerFileNameText.setEnabled(false);
 				_directoryNameText.setEnabled(false);
+				_localFileNameText.setEnabled(false);
 				_overwriteCheckBox.setEnabled(false);
 				_waitTimeText.setEnabled(false);
 				_staticFileSizeTimeText.setEnabled(false);
@@ -618,8 +746,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 					_containerNameText.setText(checkNameforAll(cname));
 				}
 				_containerNameText.setEnabled(true);
-				_fileNameText.setEnabled(false);
+				_containerPathText.setEnabled(false);
+				_containerFileNameText.setEnabled(false);
 				_directoryNameText.setEnabled(false);
+				_localFileNameText.setEnabled(false);
 				_overwriteCheckBox.setEnabled(false);
 				_waitTimeText.setEnabled(false);
 				_staticFileSizeTimeText.setEnabled(false);
@@ -632,9 +762,17 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 					cname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_NAME_ARGUMENT)); 
 					_containerNameText.setText(checkNameforAll(cname));
 				}				
+				if(cmd.hasOption(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT)) {
+					cpath = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT)); 
+					_containerPathText.setText(cpath);
+				}
 				if(cmd.hasOption(MsAzureStorageConstants.FILE_NAME_ARGUMENT)) {
 					fname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.FILE_NAME_ARGUMENT)); 
-					_fileNameText.setText(checkNameforAll(fname));
+					_containerFileNameText.setText(checkNameforAll(fname));
+				}
+				if(cmd.hasOption(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT)) {
+					cfname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT)); 
+					_containerFileNameText.setText(checkNameforAll(cfname));
 				}
 				if(cmd.hasOption(MsAzureStorageConstants.WAIT_TIME_ARGUMENT)) {
 					_waitTimeText.setText(removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.WAIT_TIME_ARGUMENT)));
@@ -649,8 +787,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 					_pollIntervalTimeText.setText(removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.POLL_INTERVAL_ARGUMENT)));
 				}
 				_containerNameText.setEnabled(true);
-				_fileNameText.setEnabled(true);
+				_containerPathText.setEnabled(true);
+				_containerFileNameText.setEnabled(true);
 				_directoryNameText.setEnabled(false);
+				_localFileNameText.setEnabled(false);
 				_overwriteCheckBox.setEnabled(true);
 				_waitTimeText.setEnabled(true);
 				_staticFileSizeTimeText.setEnabled(true);
@@ -663,13 +803,23 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 					cname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_NAME_ARGUMENT)); 
 					_containerNameText.setText(checkNameforAll(cname));
 				}				
+				if(cmd.hasOption(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT)) {
+					cpath = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT)); 
+					_containerPathText.setText(cpath);
+				}				
 				if(cmd.hasOption(MsAzureStorageConstants.FILE_NAME_ARGUMENT)) {
 					fname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.FILE_NAME_ARGUMENT)); 
-					_fileNameText.setText(checkNameforAll(fname));
+					_containerFileNameText.setText(checkNameforAll(fname));
+				}
+				if(cmd.hasOption(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT)) {
+					cfname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT)); 
+					_containerFileNameText.setText(checkNameforAll(cfname));
 				}
 				_containerNameText.setEnabled(true);
-				_fileNameText.setEnabled(true);
+				_containerPathText.setEnabled(true);
+				_containerFileNameText.setEnabled(true);
 				_directoryNameText.setEnabled(false);
+				_localFileNameText.setEnabled(false);
 				_overwriteCheckBox.setEnabled(false);
 				_waitTimeText.setEnabled(false);
 				_staticFileSizeTimeText.setEnabled(false);
@@ -682,16 +832,30 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 					cname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_NAME_ARGUMENT)); 
 					_containerNameText.setText(checkNameforAll(cname));
 				}				
+				if(cmd.hasOption(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT)) {
+					cpath = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT)); 
+					_containerPathText.setText(cpath);
+				}				
 				if(cmd.hasOption(MsAzureStorageConstants.FILE_NAME_ARGUMENT)) {
 					fname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.FILE_NAME_ARGUMENT)); 
-					_fileNameText.setText(checkNameforAll(fname));
+					_containerFileNameText.setText(checkNameforAll(fname));
+				}
+				if(cmd.hasOption(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT)) {
+					cfname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT)); 
+					_containerFileNameText.setText(checkNameforAll(cfname));
 				}
 				if(cmd.hasOption(MsAzureStorageConstants.DIRECTORY_NAME_ARGUMENT)) {
 					_directoryNameText.setText(removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.DIRECTORY_NAME_ARGUMENT)));
 				}
+				if(cmd.hasOption(MsAzureStorageConstants.LOCAL_FILE_NAME_ARGUMENT)) {
+					lfname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.LOCAL_FILE_NAME_ARGUMENT)); 
+					_localFileNameText.setText(checkNameforAll(lfname));
+				}
 				_containerNameText.setEnabled(true);
-				_fileNameText.setEnabled(true);
+				_containerPathText.setEnabled(true);
+				_containerFileNameText.setEnabled(true);
 				_directoryNameText.setEnabled(true);
+				_localFileNameText.setEnabled(true);
 				_overwriteCheckBox.setEnabled(false);
 				_waitTimeText.setEnabled(false);
 				_staticFileSizeTimeText.setEnabled(false);
@@ -704,13 +868,23 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 					cname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_NAME_ARGUMENT)); 
 					_containerNameText.setText(checkNameforAll(cname));
 				}				
+				if(cmd.hasOption(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT)) {
+					cpath = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT)); 
+					_containerPathText.setText(cpath);
+				}				
 				if(cmd.hasOption(MsAzureStorageConstants.FILE_NAME_ARGUMENT)) {
 					fname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.FILE_NAME_ARGUMENT)); 
-					_fileNameText.setText(checkNameforAll(fname));
+					_containerFileNameText.setText(checkNameforAll(fname));
+				}
+				if(cmd.hasOption(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT)) {
+					cfname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT)); 
+					_containerFileNameText.setText(checkNameforAll(cfname));
 				}
 				_containerNameText.setEnabled(true);
-				_fileNameText.setEnabled(true);
+				_containerPathText.setEnabled(true);
+				_containerFileNameText.setEnabled(true);
 				_directoryNameText.setEnabled(false);
+				_localFileNameText.setEnabled(false);
 				_overwriteCheckBox.setEnabled(false);
 				_waitTimeText.setEnabled(false);
 				_staticFileSizeTimeText.setEnabled(false);
@@ -723,9 +897,21 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 					cname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_NAME_ARGUMENT)); 
 					_containerNameText.setText(checkNameforAll(cname));
 				}				
+				if(cmd.hasOption(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT)) {
+					cpath = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_PATH_ARGUMENT)); 
+					_containerPathText.setText(cpath);
+				}				
 				if(cmd.hasOption(MsAzureStorageConstants.FILE_NAME_ARGUMENT)) {
 					fname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.FILE_NAME_ARGUMENT)); 
-					_fileNameText.setText(checkNameforAll(fname));
+					_localFileNameText.setText(checkNameforAll(fname));
+				}
+				if(cmd.hasOption(MsAzureStorageConstants.LOCAL_FILE_NAME_ARGUMENT)) {
+					lfname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.LOCAL_FILE_NAME_ARGUMENT)); 
+					_localFileNameText.setText(checkNameforAll(lfname));
+				}
+				if(cmd.hasOption(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT)) {
+					cfname = removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT)); 
+					_containerFileNameText.setText(checkNameforAll(cfname));
 				}
 				if(cmd.hasOption(MsAzureStorageConstants.DIRECTORY_NAME_ARGUMENT)) {
 					_directoryNameText.setText(removeLeadingTrailingDoubleQuotes(cmd.getOptionValue(MsAzureStorageConstants.DIRECTORY_NAME_ARGUMENT)));
@@ -736,8 +922,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 					_overwriteCheckBox.setSelection(false);
 				}
 				_containerNameText.setEnabled(true);
-				_fileNameText.setEnabled(true);
+				_containerPathText.setEnabled(true);
+				_containerFileNameText.setEnabled(true);
 				_directoryNameText.setEnabled(true);
+				_localFileNameText.setEnabled(true);
 				_overwriteCheckBox.setEnabled(true);
 				_waitTimeText.setEnabled(false);
 				_staticFileSizeTimeText.setEnabled(false);
@@ -810,65 +998,16 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 			return new ValidationMessage(this,MsAzureStorageConstants.TOO_LONG_COMMAND_LINE,
 					IMessageProvider.ERROR);
 		}
-//		if (!(_virtualMachineResourceGroupText.getText().trim().length() > 0)) {
-//			return new ValidationMessage(this,MessageFormat.format(MsAzureConstants.TEXTBOX_CANNOT_BE_EMPTY,
-//					MsAzureConstants.VIRTUAL_MACHINE_RESOURCE_GROUP_NAME),IMessageProvider.ERROR, _virtualMachineResourceGroupText);
-//		}
-//		switch (getSelectedFunction()) {
-//
-//			case operations:
-//				if (!(_virtualMachineOperationsVirtualMachineText.getText().trim().length() > 0)) {
-//					return new ValidationMessage(this,MessageFormat.format(MsAzureConstants.TEXTBOX_CANNOT_BE_EMPTY,
-//							MsAzureConstants.VIRTUAL_MACHINE_OPERATIONS_TASK_VM_NAME),IMessageProvider.ERROR, _virtualMachineOperationsVirtualMachineText);
-//				}
-//				
-//				switch (getSelectedVirtualMachineOperation()) {
-//				
-//					case create:
-//						if (!(_virtualMachineOperationsCreateAdminUserIdText.getText().trim().length() > 0)) {
-//							return new ValidationMessage(this,MessageFormat.format(MsAzureConstants.TEXTBOX_CANNOT_BE_EMPTY,
-//									MsAzureConstants.VIRTUAL_MACHINE_OPERATIONS_TASK_CREATE_ADMIN_USER_NAME),IMessageProvider.ERROR, _virtualMachineOperationsCreateAdminUserIdText);
-//						}
-//						if (!(_virtualMachineOperationsCreateAdminUserPasswordText.getText().trim().length() > 0)) {
-//							return new ValidationMessage(this,MessageFormat.format(MsAzureConstants.TEXTBOX_CANNOT_BE_EMPTY,
-//									MsAzureConstants.VIRTUAL_MACHINE_OPERATIONS_TASK_CREATE_ADMIN_USER_PASSWORD_NAME),IMessageProvider.ERROR, _virtualMachineOperationsCreateAdminUserPasswordText);
-//						}
-//						break;
-//						
-//					case delete:
-//						break;
-//
-//					case poweroff:
-//						break;
-//
-//					case restart:
-//						break;
-//
-//					case start:
-//						break;
-//
-//					default:
-//						break;
-//				}
-//				break;
-//		
-//			case information:
-//				
-//				switch (getSelectedVirtualMachineInformation()) {
-//				
-//					case list:
-//						break;
-//	
-//					default:
-//						break;
-//				}
-//				break;
-//		
-//				
-//			default:
-//				break;
-//		
-//		}
+		if ((_containerFileNameText.getText().trim().length() > 0) &&
+			(_localFileNameText.getText().trim().length() > 0)) {
+	       	if((_containerFileNameText.getText().contains(SystemConstants.ASTERISK)) ||
+	       			(_containerFileNameText.getText().contains(SystemConstants.QUESTION_MARK))){
+				return new ValidationMessage(this, MsAzureStorageConstants.WILD_CARDS_NOT_SUPPORTED_ERROR, IMessageProvider.ERROR, _containerFileNameText);
+	       	} else if((_localFileNameText.getText().contains(SystemConstants.ASTERISK)) ||
+	       			(_localFileNameText.getText().contains(SystemConstants.QUESTION_MARK))){
+				return new ValidationMessage(this, MsAzureStorageConstants.WILD_CARDS_NOT_SUPPORTED_ERROR, IMessageProvider.ERROR, _localFileNameText);
+	       	}
+		}
 		return null;
 	}
 

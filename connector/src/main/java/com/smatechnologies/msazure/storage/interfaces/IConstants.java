@@ -3,7 +3,7 @@ package com.smatechnologies.msazure.storage.interfaces;
 public interface IConstants {
 
 	public interface General {
-		public static final String SOFTWARE_VERSION = "1.0.0";
+		public static final String SOFTWARE_VERSION = "2.0.1-12.14.4";
 		
 		public static final String SYSTEM_USER_DIRECTORY = "user.dir";
 		public static final String TRUE = "True";

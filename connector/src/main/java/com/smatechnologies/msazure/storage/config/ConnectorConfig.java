@@ -44,7 +44,6 @@ public class ConnectorConfig {
 	
 		try {
 			for(StorageInformation storage : storageList) {
-				System.out.println("name {" + storage.getName() + "}  {" + storage.getConnection() + "}");
 				htblStorageAccounts.put(storage.getName(),storage);
 				storageInformationList.add(storage.getName());
 			}

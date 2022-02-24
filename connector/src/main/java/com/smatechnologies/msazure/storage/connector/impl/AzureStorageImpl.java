@@ -89,25 +89,31 @@ public class AzureStorageImpl implements IAzureStorage {
 	}	// END : getContainerList
 
 	public BlobProperties checkIfFileExists(
-			ConnectorArguments _AzureConnectorArguments
+			ConnectorArguments _ConnectorArguments
 			) throws Exception {
 
+		String containerFileName = null;
 		BlobProperties blobPproperties = null;
 		
 		try{
-			LOG.debug("Check if File (" + _AzureConnectorArguments.getFileName() + ") exists in container (" + _AzureConnectorArguments.getContainerName() + ") in storage account (" + _AzureConnectorArguments.getStorageAccount() + ")");
+			if(_ConnectorArguments.getContainerPath() != null) {
+				containerFileName = _ConnectorArguments.getContainerPath() + IConstants.Characters.SLASH + _ConnectorArguments.getContainerFileName();
+			} else {
+				containerFileName = _ConnectorArguments.getContainerFileName();
+			}
+			LOG.debug("Check if File (" + containerFileName + ") exists in container (" + _ConnectorArguments.getContainerName() + ") in storage account (" + _ConnectorArguments.getStorageAccount() + ")");
 	       	// get connection String
-	       	StorageInformation storageInformation = _ConnectorConfig.getStorageInformation(_AzureConnectorArguments.getStorageAccount().toLowerCase());
+	       	StorageInformation storageInformation = _ConnectorConfig.getStorageInformation(_ConnectorArguments.getStorageAccount().toLowerCase());
 	    	// Create a BlobServiceClient object which will be used to create a container client
 	    	BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString(storageInformation.getConnection()).buildClient();
 	    	// get the container client object
-	    	BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(_AzureConnectorArguments.getContainerName());
+	    	BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(_ConnectorArguments.getContainerName());
 	    	// Get a reference to a blob
-			BlobClient blobClient = containerClient.getBlobClient(_AzureConnectorArguments.getFileName());
+			BlobClient blobClient = containerClient.getBlobClient(containerFileName);
 			blobPproperties = blobClient.getProperties();
 		} catch (com.azure.storage.blob.models.BlobStorageException azex) {
 			if(azex.getMessage().contains(AZURE_ERROR_EMPTY_BODY)) {
-				LOG.debug("File (" + _AzureConnectorArguments.getFileName() + ") not found in container (" + _AzureConnectorArguments.getContainerName() + ") in storage account (" + _AzureConnectorArguments.getStorageAccount() + ")");
+				LOG.debug("File (" + _ConnectorArguments.getContainerFileName() + ") not found in container (" + containerFileName + ") in storage account (" + _ConnectorArguments.getStorageAccount() + ")");
 				return null;
 			} else {
 				throw new Exception(azex);
@@ -132,10 +138,14 @@ public class AzureStorageImpl implements IAzureStorage {
 		try{
 			DateTimeFormatter displayBlobCreatedTimeFormatter = DateTimeFormatter.ofPattern(IConstants.General.LOG_DATE_TIME_FORMAT); 
 			containerPattern = _ConnectorArguments.getContainerName();
-			blobPattern = _ConnectorArguments.getFileName();
+			blobPattern = _ConnectorArguments.getContainerFileName();
 			output.add(SeparatorLine);
 	       	if(_ConnectorConfig.isDebug()) {	
-	       		LOG.info("DEBUG : Get list of blobs (" + blobPattern + ") in container (" + containerPattern + ") for storage account (" + _ConnectorArguments.getStorageAccount() + ")");
+	       		if(_ConnectorArguments.getContainerPath() != null) {
+	       			LOG.info("DEBUG : Get list of blobs (" + blobPattern + ") in container (" + containerPattern + ") path (" + _ConnectorArguments.getContainerPath() + ") for storage account (" + _ConnectorArguments.getStorageAccount() + ")");
+	       		} else {
+	       			LOG.info("DEBUG : Get list of blobs (" + blobPattern + ") in container (" + containerPattern + ") for storage account (" + _ConnectorArguments.getStorageAccount() + ")");
+	       		}
 	       	}
 	    	// Create a BlobServiceClient object which will be used to create a container client
 	    	BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
@@ -151,13 +161,34 @@ public class AzureStorageImpl implements IAzureStorage {
 		       		}
 			    	BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(blobContainerItem.getName().toLowerCase());
 			    	for (BlobItem blobItem : containerClient.listBlobs()) {
-			    		if(blobPattern.equalsIgnoreCase(ALL)) {
+			    		if(_ConnectorArguments.getContainerPath() != null) {
+			    			if(blobItem.getName().startsWith(_ConnectorArguments.getContainerPath())) {
+			    				// get all blobs in the path
+					    		if(_ConnectorConfig.isDebug()) {	
+					    			LOG.info("DEBUG : Adding blob (" + blobItem.getName() + ") to container (" + blobContainerItem.getName() + ") list");
+						       	}
+					    		output.add(MessageFormat.format(StorageContainerBlobLine, blobItem.getName()));
+				       		} else {
+			    				// check for specific blobs
+				       			// get blob name
+				       			int lastForwardSlash = blobItem.getName().lastIndexOf(IConstants.Characters.SLASH);
+				       			if(lastForwardSlash > -1) {
+				       				String blobname = blobItem.getName().substring(lastForwardSlash + 1, blobItem.getName().length());
+					   				if(FilenameUtils.wildcardMatch(blobname, blobPattern)) {
+							    		if(_ConnectorConfig.isDebug()) {	
+							    			LOG.info("DEBUG : Adding blob (" + blobItem.getName() + ") to container (" + blobContainerItem.getName() + ") list");
+								       	}
+							    		output.add(MessageFormat.format(StorageContainerBlobLine, blobItem.getName()));
+					   				}
+				       			}
+				       		}
+			    		} else if(blobPattern.equalsIgnoreCase(ALL)) {
 				       		// get all blobs
 				    		if(_ConnectorConfig.isDebug()) {	
 				    			LOG.info("DEBUG : Adding blob (" + blobItem.getName() + ") to container (" + blobContainerItem.getName() + ") list");
 					       	}
 				    		output.add(MessageFormat.format(StorageContainerBlobLine, blobItem.getName()));
-			    		} else {
+ 			    		} else {
 			    			// get matching blobs
 			   				if(FilenameUtils.wildcardMatch(blobItem.getName(), blobPattern)) {
 					    		if(_ConnectorConfig.isDebug()) {	
@@ -170,7 +201,6 @@ public class AzureStorageImpl implements IAzureStorage {
 			   				}
 			    		}
 			    	}
-			    	
 		       	} else {
 		       		// otherwise add matching names
 		       		// get matching containers
@@ -184,7 +214,30 @@ public class AzureStorageImpl implements IAzureStorage {
 			       		// get matching blobs
 				    	BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(blobContainerItem.getName().toLowerCase());
 				    	for (BlobItem blobItem : containerClient.listBlobs()) {
-				    		if(blobPattern.equalsIgnoreCase(ALL)) {
+				    		if(_ConnectorArguments.getContainerPath() != null) {
+				    			if(blobItem.getName().startsWith(_ConnectorArguments.getContainerPath())) {
+						       		if(blobPattern.equalsIgnoreCase(ALL)) {
+					    				// get all blobs in the path
+							    		if(_ConnectorConfig.isDebug()) {	
+							    			LOG.info("DEBUG : Adding blob (" + blobItem.getName() + ") to container (" + blobContainerItem.getName() + ") list");
+								       	}
+							    		output.add(MessageFormat.format(StorageContainerBlobLine, blobItem.getName()));
+						       		} else {
+					    				// check for specific blobs
+						       			// get blob name
+						       			int lastForwardSlash = blobItem.getName().lastIndexOf(IConstants.Characters.SLASH);
+						       			if(lastForwardSlash > -1) {
+						       				String blobname = blobItem.getName().substring(lastForwardSlash + 1, blobItem.getName().length());
+							   				if(FilenameUtils.wildcardMatch(blobname, blobPattern)) {
+									    		if(_ConnectorConfig.isDebug()) {	
+									    			LOG.info("DEBUG : Adding blob (" + blobItem.getName() + ") to container (" + blobContainerItem.getName() + ") list");
+										       	}
+									    		output.add(MessageFormat.format(StorageContainerBlobLine, blobItem.getName()));
+							   				}
+						       			}
+						       		}
+				    			}
+				    		} else if(blobPattern.equalsIgnoreCase(ALL)) {
 					       		// get all blobs
 					    		if(_ConnectorConfig.isDebug()) {	
 					    			LOG.info("DEBUG : Adding blob (" + blobItem.getName() + ") to container (" + blobContainerItem.getName() + ") list");
@@ -248,7 +301,7 @@ public class AzureStorageImpl implements IAzureStorage {
 	       		List<String> containers = getContainerList(_ConnectorArguments, connectionString);
 	       		if(!containers.isEmpty()) {
 	       			for(String container : containers) {
-	       				if(FilenameUtils.wildcardMatch(container, _ConnectorArguments.getFileName())) {
+	       				if(FilenameUtils.wildcardMatch(container, _ConnectorArguments.getContainerFileName())) {
 	       					containerList.add(container);
 	       				}
 	       			}
@@ -285,22 +338,28 @@ public class AzureStorageImpl implements IAzureStorage {
 		
 		boolean success = false;
 		List<String> fileList = new ArrayList<String>();
+		String containerFileName = null;
 		
 		try{
 			fileList.clear();
-	       	if((_ConnectorArguments.getFileName().contains(IConstants.Characters.ASTERIX)) ||
-	       			(_ConnectorArguments.getFileName().contains(IConstants.Characters.QUESTION_MARK))){
+			if(_ConnectorArguments.getContainerPath() != null) {
+				containerFileName = _ConnectorArguments.getContainerPath() + IConstants.Characters.SLASH + _ConnectorArguments.getContainerFileName();
+			} else {
+				containerFileName = _ConnectorArguments.getContainerFileName();
+			}
+			if((_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.ASTERIX)) ||
+	       			(_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.QUESTION_MARK))){
 	       		// we have wildcards, so get item list from container
-	       		List<String> items = getContainerBlobList(_ConnectorArguments, connectionString);
+	       		List<String> items = getContainerBlobListNames(_ConnectorArguments);
 	       		if(!items.isEmpty()) {
 	       			for(String item : items) {
-	       				if(FilenameUtils.wildcardMatch(item, _ConnectorArguments.getFileName())) {
+	       				if(FilenameUtils.wildcardMatch(item, containerFileName)) {
 	       					fileList.add(item);
 	       				}
 	       			}
 	       		}
 	       	} else {
-				fileList.add(_ConnectorArguments.getFileName());
+				fileList.add(containerFileName);
 	       	}
 	    	// Create a BlobServiceClient object which will be used to create a container client
 	    	BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
@@ -316,13 +375,13 @@ public class AzureStorageImpl implements IAzureStorage {
 					blobClient.delete();
 	    		}	    		
 	    	} else {
-	       		LOG.info(MessageFormat.format(StorageAccountDeleteFileNoMatchingFilesMsg, _ConnectorArguments.getFileName(),_ConnectorArguments.getContainerName()));
+	       		LOG.info(MessageFormat.format(StorageAccountDeleteFileNoMatchingFilesMsg, _ConnectorArguments.getContainerFileName(),_ConnectorArguments.getContainerName()));
 	    		
 	    	}
 	    	success = true;
 		} catch (com.azure.storage.blob.models.BlobStorageException azex) {
 			if(azex.getMessage().contains(AZURE_ERROR_BLOB_DOES_NOT_EXIST)) {
-	       		LOG.error(AzureStorageImpl.class.getSimpleName(),MessageFormat.format(StorageAccountDeleteFileNoMatchingFilesMsg, _ConnectorArguments.getFileName(), _ConnectorArguments.getContainerName()));
+	       		LOG.error(MessageFormat.format(StorageAccountDeleteFileNoMatchingFilesMsg, _ConnectorArguments.getContainerFileName(), _ConnectorArguments.getContainerName()));
 	       		return false;
 			} else {
 				throw new Exception(azex);
@@ -342,12 +401,12 @@ public class AzureStorageImpl implements IAzureStorage {
 		List<String> fileList = new ArrayList<String>();
 		
 		try{
-	       	if((_ConnectorArguments.getFileName().contains(IConstants.Characters.ASTERIX)) ||
-	       			(_ConnectorArguments.getFileName().contains(IConstants.Characters.QUESTION_MARK))){
+	       	if((_ConnectorArguments.getLocalFileName().contains(IConstants.Characters.ASTERIX)) ||
+	       			(_ConnectorArguments.getLocalFileName().contains(IConstants.Characters.QUESTION_MARK))){
 	       		// we have wildcards, so get item list from container
-	       		fileList = getMatchingFiles(_ConnectorArguments.getDirectoryName(), _ConnectorArguments.getFileName());
+	       		fileList = getMatchingFiles(_ConnectorArguments.getDirectoryName(), _ConnectorArguments.getLocalFileName());
 	       	} else {
-				fileList.add(_ConnectorArguments.getFileName());
+				fileList.add(_ConnectorArguments.getLocalFileName());
 	       	}
 	    	// Create a BlobServiceClient object which will be used to create a container client
 	    	BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
@@ -356,20 +415,32 @@ public class AzureStorageImpl implements IAzureStorage {
 	    	if(!fileList.isEmpty()) {
 	    		for(String filename : fileList) {
 	    			String fullFileName = _ConnectorArguments.getDirectoryName() + File.separator + filename;
+	    			String containerFileName = null;
+	    			if(_ConnectorArguments.getContainerFileName() != null) {
+	    				containerFileName = _ConnectorArguments.getContainerFileName();
+	    			} else {
+	    				containerFileName = filename;
+	    			}
+	    			if(_ConnectorArguments.getContainerPath() != null) {
+	    				containerFileName = _ConnectorArguments.getContainerPath() + IConstants.Characters.SLASH + containerFileName;
+		    	       	if(_ConnectorConfig.isDebug()) {	
+		    	       		LOG.info("DEBUG : Upload File (" + fullFileName + ") into container (" + _ConnectorArguments.getContainerName() + "/" + _ConnectorArguments.getContainerPath() + ") in storage account (" + _ConnectorArguments.getStorageAccount() + ")");	
+	    				}
+	    			}
 	    	       	if(_ConnectorConfig.isDebug()) {	
-	    	       		LOG.info("DEBUG : Upload File (" + fullFileName + ") into container (" + _ConnectorArguments.getContainerName() + ") in storage account (" + _ConnectorArguments.getStorageAccount() + ")");
+	    	       		LOG.info("DEBUG : Upload File (" + fullFileName + ") into container (" + _ConnectorArguments.getContainerName() + ") in storage account (" + _ConnectorArguments.getStorageAccount() + ") filename (" + containerFileName + ")");
 	    	       	}
-		    	// Get a reference to a blob
-				BlobClient blobClient = containerClient.getBlobClient(filename);
-	       		LOG.info(MessageFormat.format(StorageAccountUploadingFileMsg, fullFileName, blobClient.getBlobUrl()));
-				// Upload the file
-				blobClient.uploadFromFile(fullFileName, _ConnectorArguments.isUploadFileOverwrite());
+			    	// Get a reference to a blob
+					BlobClient blobClient = containerClient.getBlobClient(containerFileName);
+		       		LOG.info(MessageFormat.format(StorageAccountUploadingFileMsg, fullFileName, blobClient.getBlobUrl()));
+					// Upload the file
+					blobClient.uploadFromFile(fullFileName, _ConnectorArguments.isUploadFileOverwrite());
 	    		}
+		    	success = true;
 	    	} else {
-	       		LOG.error(AzureStorageImpl.class.getSimpleName(),MessageFormat.format(StorageAccountFileUploadNoMatchingFilesMsg, _ConnectorArguments.getFileName(),_ConnectorArguments.getDirectoryName()));
-	    		
+	       		LOG.error(MessageFormat.format(StorageAccountFileUploadNoMatchingFilesMsg, _ConnectorArguments.getLocalFileName(),_ConnectorArguments.getDirectoryName()));
+		    	success = false;
 	    	}
-	    	success = true;
 		} catch (Exception ex) {
 			throw new Exception(ex);
 		}
@@ -384,22 +455,28 @@ public class AzureStorageImpl implements IAzureStorage {
 		boolean success = false;
 		List<String> fileList = new ArrayList<String>();
 		String fullFileName = null;
+		String containerFileName = null;
 		
 		try{
 			fileList.clear();
-	       	if((_ConnectorArguments.getFileName().contains(IConstants.Characters.ASTERIX)) ||
-	       			(_ConnectorArguments.getFileName().contains(IConstants.Characters.QUESTION_MARK))){
+			if(_ConnectorArguments.getContainerPath() != null) {
+				containerFileName = _ConnectorArguments.getContainerPath() + IConstants.Characters.SLASH + _ConnectorArguments.getContainerFileName();
+			} else {
+				containerFileName = _ConnectorArguments.getContainerFileName();
+			}
+			if((_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.ASTERIX)) ||
+	       			(_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.QUESTION_MARK))){
 	       		// we have wildcards, so get item list from container
 	       		List<String> items = getContainerBlobListNames(_ConnectorArguments);
 	       		if(!items.isEmpty()) {
 	       			for(String item : items) {
-	       				if(FilenameUtils.wildcardMatch(item, _ConnectorArguments.getFileName())) {
+	       				if(FilenameUtils.wildcardMatch(item, containerFileName)) {
 	       					fileList.add(item);
 	       				}
 	       			}
 	       		}
 	       	} else {
-				fileList.add(_ConnectorArguments.getFileName());
+				fileList.add(containerFileName);
 	       	}
 	    	// Create a BlobServiceClient object which will be used to create a container client
 	    	BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
@@ -408,6 +485,7 @@ public class AzureStorageImpl implements IAzureStorage {
 	    	if(!fileList.isEmpty()) {
 	    		for(String filename : fileList) {
 					fullFileName = _ConnectorArguments.getDirectoryName() + File.separator + filename;
+					fullFileName = fullFileName.replaceAll(IConstants.Characters.SLASH, IConstants.Characters.UNDERSCORE);
 					if(_ConnectorConfig.isDebug()) {	
 			       		LOG.info("DEBUG : Download File (" + fullFileName + ") from container (" + _ConnectorArguments.getContainerName() + ") in storage account (" + 
 			       				_ConnectorArguments.getStorageAccount() + ")");
@@ -419,12 +497,12 @@ public class AzureStorageImpl implements IAzureStorage {
 	    		}	    		
 		    	success = true;
 	    	} else {
-	       		LOG.info(MessageFormat.format(StorageAccountFileDownloadNoMatchingFilesMsg, _ConnectorArguments.getFileName(), _ConnectorArguments.getContainerName()));
+	       		LOG.info(MessageFormat.format(StorageAccountFileDownloadNoMatchingFilesMsg, _ConnectorArguments.getContainerFileName(), _ConnectorArguments.getContainerName()));
 		    	success = false;
 	    	}
 		} catch (com.azure.storage.blob.models.BlobStorageException azex) {
 			if(azex.getMessage().contains(AZURE_ERROR_EMPTY_BODY)) {
-	       		LOG.error(MessageFormat.format(StorageAccountFileDownloadNoMatchingFilesMsg, _ConnectorArguments.getFileName(), _ConnectorArguments.getContainerName()));
+	       		LOG.error(MessageFormat.format(StorageAccountFileDownloadNoMatchingFilesMsg, _ConnectorArguments.getContainerFileName(), _ConnectorArguments.getContainerName()));
 				// delete the file if it exists
 	       		deleteFile(fullFileName);
 	       		return false;
@@ -471,7 +549,7 @@ public class AzureStorageImpl implements IAzureStorage {
 	}	// END : deleteFile
 
 	private List<String> getContainerBlobListNames(
-			ConnectorArguments _AzureConnectorArguments
+			ConnectorArguments _ConnectorArguments
 			) throws Exception {
 		
 		List<String> names = new ArrayList<String>();
@@ -480,22 +558,26 @@ public class AzureStorageImpl implements IAzureStorage {
 		
 		try{
 			DateTimeFormatter displayBlobCreatedTimeFormatter = DateTimeFormatter.ofPattern(IConstants.General.LOG_DATE_TIME_FORMAT); 
-			blobPattern = _AzureConnectorArguments.getFileName();
+			if(_ConnectorArguments.getContainerPath() != null) {
+				blobPattern = _ConnectorArguments.getContainerPath() + IConstants.Characters.SLASH + _ConnectorArguments.getContainerFileName();
+			} else {
+				blobPattern = _ConnectorArguments.getContainerFileName();
+			}
 	       	// get connection String
-	       	StorageInformation storageInformation = _ConnectorConfig.getStorageInformation(_AzureConnectorArguments.getStorageAccount().toLowerCase());
+	       	StorageInformation storageInformation = _ConnectorConfig.getStorageInformation(_ConnectorArguments.getStorageAccount().toLowerCase());
 	    	// Create a BlobServiceClient object which will be used to create a container client
 	    	BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString(storageInformation.getConnection()).buildClient();
 	    	// get matching blobs in container
-	    	BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(_AzureConnectorArguments.getContainerName().toLowerCase());
+	    	BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(_ConnectorArguments.getContainerName().toLowerCase());
 	    	for (BlobItem blobItem : containerClient.listBlobs()) {
 	    		if(blobPattern.equalsIgnoreCase(ALL)) {
 		       		// get all blobs
-	    			LOG.debug("Adding blob (" + blobItem.getName() + ") from container (" + _AzureConnectorArguments.getContainerName() + ") to list");
+	    			LOG.debug("Adding blob (" + blobItem.getName() + ") from container (" + _ConnectorArguments.getContainerName() + ") to list");
 		    		names.add(blobItem.getName());
 	    		} else {
 	    			// get matching blobs
 	   				if(FilenameUtils.wildcardMatch(blobItem.getName(), blobPattern)) {
-		    			LOG.debug("Adding blob (" + blobItem.getName() + ") from container (" + _AzureConnectorArguments.getContainerName() + ") to list");
+		    			LOG.debug("Adding blob (" + blobItem.getName() + ") from container (" + _ConnectorArguments.getContainerName() + ") to list");
 			    		names.add(blobItem.getName());
 	   				}
 	    		}

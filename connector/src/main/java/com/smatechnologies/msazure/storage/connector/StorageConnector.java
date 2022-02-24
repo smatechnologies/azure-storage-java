@@ -28,8 +28,10 @@ public class StorageConnector {
 	private static final String TaskMsg =                                       "-t   (task)                          : {0}";
 	private static final String StorageAccountMsg =                             "-sa  (storage account)               : {0}";
 	private static final String ContainerNameMsg =                              "-cn  (container name)                : {0}";
-	private static final String FileNameMsg =                                   "-fn  (file name)                     : {0}";
+	private static final String ContainerPathMsg =                              "-cp  (container path)                : {0}";
+	private static final String ContainerFileNameMsg =                          "-cf  (container file name)           : {0}";
 	private static final String DirectoryNameMsg =                              "-di  (directory name)                : {0}";
+	private static final String LocalFileNameMsg =                              "-lf  (local file name)               : {0}";
 	private static final String UploadFileOverwriteMsg =                        "-ov  (upload file overwrite)         : {0}";
 	private static final String FileArrivalWaitTimeMsg =                        "-wt  (file arrival wait time)        : {0}";
 	private static final String FileArrivalPollDelayMsg =                       "-pd  (file arrival poll delay)       : {0}";
@@ -49,6 +51,8 @@ public class StorageConnector {
 		boolean result = false;
 		
 		try {
+			// set supported TLS protocols 
+			System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
     		// get the arguments
 			jcConnectorArguments = JCommander.newBuilder()
 					.addObject(_ConnectorArguments)
@@ -72,11 +76,17 @@ public class StorageConnector {
         	LOG.info(MessageFormat.format(StorageAccountMsg,_ConnectorArguments.getStorageAccount()));
         	LOG.info(MessageFormat.format(TaskMsg,_ConnectorArguments.getTask()));
         	LOG.info(MessageFormat.format(ContainerNameMsg,_ConnectorArguments.getContainerName()));
- 			if(_ConnectorArguments.getFileName() != null) {
-	        	LOG.info(MessageFormat.format(FileNameMsg,_ConnectorArguments.getFileName()));
+ 			if(_ConnectorArguments.getContainerPath() != null) {
+	        	LOG.info(MessageFormat.format(ContainerPathMsg,_ConnectorArguments.getContainerPath()));
+			}
+ 			if(_ConnectorArguments.getContainerFileName() != null) {
+	        	LOG.info(MessageFormat.format(ContainerFileNameMsg,_ConnectorArguments.getContainerFileName()));
 			}
 			if(_ConnectorArguments.getDirectoryName() != null) {
 				LOG.info(MessageFormat.format(DirectoryNameMsg,_ConnectorArguments.getDirectoryName()));
+			}
+			if(_ConnectorArguments.getLocalFileName() != null) {
+				LOG.info(MessageFormat.format(LocalFileNameMsg,_ConnectorArguments.getLocalFileName()));
 			}
         	LOG.info(MessageFormat.format(UploadFileOverwriteMsg,_ConnectorArguments.isUploadFileOverwrite()));
 			LOG.info(MessageFormat.format(FileArrivalPollDelayMsg,_ConnectorArguments.getFileArrivalPollDelay()));

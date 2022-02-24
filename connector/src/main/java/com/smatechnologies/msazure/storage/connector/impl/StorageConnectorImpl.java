@@ -48,15 +48,17 @@ public class StorageConnectorImpl {
 
 	private static final String FileDownloadMissingFileNameMsg =      "filedownload task missing file name argument";
 	private static final String FileDownloadMissingDirectoryNameMsg = "filedownload task missing directory name argument";
-	private static final String FileDownloadSuccessMsg =              "filedownload ({0}) task from ({1}) to ({2}) successful";
-	private static final String FileDownloadFailedMsg =               "filedownload ({0}) task from ({1}) to ({2}) successful";
+	private static final String FileDownloadWildCardErrorMsg =        "filedownload ({0}) contains wildcard characters when both filenames are present";
+	private static final String FileDownloadSuccessMsg =              "filedownload ({0}) task from ({1}) successful";
+	private static final String FileDownloadFailedMsg =               "filedownload ({0}) task from ({1}) failed";
 
 	private static final String FileListMissingFileNameMsg =          "filelist task missing file name argument";
 
 	private static final String FileUploadMissingFileNameMsg =        "fileupload task missing file name argument";
 	private static final String FileUploadMissingDirectoryNameMsg =   "fileupload task missing directory name argument";
-	private static final String FileUploadSuccessMsg =                "fileupload ({0}) task from ({1}) to ({2}) successful";
-	private static final String FileUploadFailedMsg =                 "fileupload ({0}) task from ({1}) to ({2}) failed";
+	private static final String FileUploadWildCardErrorMsg =          "fileupload ({0}) contains wildcard characters when both filenames are present";
+	private static final String FileUploadSuccessMsg =                "fileupload ({0}) task to ({1}) successful";
+	private static final String FileUploadFailedMsg =                 "fileupload ({0}) task to ({1}) failed";
 
 	
 	private final static Logger LOG = LoggerFactory.getLogger(StorageConnectorImpl.class);
@@ -125,7 +127,7 @@ public class StorageConnectorImpl {
 
 				case filearrival:
 					fileArrivalResult = null;
-					if(_ConnectorArguments.getFileName() == null) {
+					if(_ConnectorArguments.getContainerFileName() == null) {
 						LOG.info(FileArrivalMissingFileNameMsg);
 						return false;
 					}
@@ -134,9 +136,9 @@ public class StorageConnectorImpl {
 		        		LOG.error(MessageFormat.format(FileArrivalInvalidContainerNameMsg,_ConnectorArguments.getContainerName()));
 		        		return false;
 			       	} 
-		       		if((_ConnectorArguments.getFileName().contains(IConstants.Characters.ASTERIX)) ||
-		       			(_ConnectorArguments.getFileName().contains(IConstants.Characters.QUESTION_MARK))) {
-		       			LOG.error(MessageFormat.format(FileArrivalInvalidFileNameMsg,_ConnectorArguments.getFileName()));
+		       		if((_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.ASTERIX)) ||
+		       			(_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.QUESTION_MARK))) {
+		       			LOG.error(MessageFormat.format(FileArrivalInvalidFileNameMsg,_ConnectorArguments.getContainerFileName()));
 		        		return false;
 			       	} 
 					if(_ConnectorArguments.getFileArrivalMaximumWaitTime() != null) {
@@ -153,20 +155,26 @@ public class StorageConnectorImpl {
 					break;
 
 				case filedelete:
-					if(_ConnectorArguments.getFileName() == null) {
+					if(_ConnectorArguments.getContainerFileName() == null) {
 						LOG.error(FileDeleteMissingFileNameMsg);
 						return false;
 					}
+					String deleteFileName = null;
+					if(_ConnectorArguments.getContainerPath() != null) {
+						deleteFileName = _ConnectorArguments.getContainerPath() + IConstants.Characters.SLASH + _ConnectorArguments.getContainerFileName();
+					} else {
+						deleteFileName = _ConnectorArguments.getContainerFileName();
+					}
 					success = _IAzureStorage.deleteFile(_ConnectorArguments, storageInformation.getConnection());
 		        	if(success) {
-		        		LOG.info(MessageFormat.format(FileDeleteSuccessMsg,_ConnectorArguments.getFileName(), _ConnectorArguments.getContainerName()));
+		        		LOG.info(MessageFormat.format(FileDeleteSuccessMsg, deleteFileName, _ConnectorArguments.getContainerName()));
 		        	} else {
-		        		LOG.error(MessageFormat.format(FileDeleteFailedMsg,_ConnectorArguments.getFileName(), _ConnectorArguments.getContainerName()));
+		        		LOG.error(MessageFormat.format(FileDeleteFailedMsg, deleteFileName, _ConnectorArguments.getContainerName()));
 		        	}
 					break;
 
 				case filedownload:
-					if(_ConnectorArguments.getFileName() == null) {
+					if(_ConnectorArguments.getContainerFileName() == null) {
 						LOG.error(FileDownloadMissingFileNameMsg);
 						return false;
 					}
@@ -174,17 +182,35 @@ public class StorageConnectorImpl {
 						LOG.error(FileDownloadMissingDirectoryNameMsg);
 						return false;
 					}
-					String downloadFileName = _ConnectorArguments.getDirectoryName() + File.separator + _ConnectorArguments.getFileName();
+					if(_ConnectorArguments.getLocalFileName() != null) {
+				       	if((_ConnectorArguments.getLocalFileName().contains(IConstants.Characters.ASTERIX)) ||
+				       			(_ConnectorArguments.getLocalFileName().contains(IConstants.Characters.QUESTION_MARK))){
+			        		LOG.info(MessageFormat.format(FileDownloadSuccessMsg,FileDownloadWildCardErrorMsg, _ConnectorArguments.getLocalFileName()));
+							return false;
+				       	}
+				       	if((_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.ASTERIX)) ||
+				       			(_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.QUESTION_MARK))){
+			        		LOG.info(MessageFormat.format(FileDownloadWildCardErrorMsg, _ConnectorArguments.getContainerFileName()));
+							return false;
+				       	}
+					}
+					String downloadFileName = null;
+					if(_ConnectorArguments.getContainerPath() != null) {
+						downloadFileName = _ConnectorArguments.getContainerName() + IConstants.Characters.SLASH + _ConnectorArguments.getContainerPath() + IConstants.Characters.SLASH + _ConnectorArguments.getContainerFileName();
+					} else {
+						downloadFileName = _ConnectorArguments.getContainerName() + IConstants.Characters.SLASH + _ConnectorArguments.getContainerFileName();
+					}
+					
 					success = _IAzureStorage.downLoadFile(_ConnectorArguments, storageInformation.getConnection());
 		        	if(success) {
-		        		LOG.info(MessageFormat.format(FileDownloadSuccessMsg,downloadFileName, _ConnectorArguments.getContainerName(), _ConnectorArguments.getDirectoryName()));
+		        		LOG.info(MessageFormat.format(FileDownloadSuccessMsg,downloadFileName, _ConnectorArguments.getDirectoryName()));
 		        	} else {
-						LOG.error(MessageFormat.format(FileDownloadFailedMsg,downloadFileName, _ConnectorArguments.getContainerName(), _ConnectorArguments.getDirectoryName()));
+						LOG.error(MessageFormat.format(FileDownloadFailedMsg,downloadFileName, _ConnectorArguments.getDirectoryName()));
 		        	}
 					break;
 
 				case filelist:
-					if(_ConnectorArguments.getFileName() == null) {
+					if(_ConnectorArguments.getContainerFileName() == null) {
 			        	LOG.info(MessageFormat.format(FileListMissingFileNameMsg,_ConnectorArguments.getContainerName()));
 						return false;
 					}
@@ -198,7 +224,7 @@ public class StorageConnectorImpl {
 					break;
 
 				case fileupload:
-					if(_ConnectorArguments.getFileName() == null) {
+					if(_ConnectorArguments.getLocalFileName() == null) {
 						LOG.error(FileUploadMissingFileNameMsg);
 						return false;
 					}
@@ -206,12 +232,32 @@ public class StorageConnectorImpl {
 			        	LOG.error(FileUploadMissingDirectoryNameMsg);
 						return false;
 					}
-					String uploadFileName = _ConnectorArguments.getDirectoryName() + File.separator + _ConnectorArguments.getFileName();
+					if(_ConnectorArguments.getContainerFileName() != null) {
+				       	if((_ConnectorArguments.getLocalFileName().contains(IConstants.Characters.ASTERIX)) ||
+				       			(_ConnectorArguments.getLocalFileName().contains(IConstants.Characters.QUESTION_MARK))){
+			        		LOG.info(MessageFormat.format(FileUploadSuccessMsg,FileUploadWildCardErrorMsg, _ConnectorArguments.getLocalFileName()));
+							return false;
+				       	}
+				       	if((_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.ASTERIX)) ||
+				       			(_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.QUESTION_MARK))){
+			        		LOG.info(MessageFormat.format(FileUploadWildCardErrorMsg, _ConnectorArguments.getContainerFileName()));
+							return false;
+				       	}
+					}
+					String uploadFileName = _ConnectorArguments.getDirectoryName() + File.separator + _ConnectorArguments.getLocalFileName();
 					success = _IAzureStorage.upLoadFile(_ConnectorArguments, storageInformation.getConnection());
 		        	if(success) {
-		        		LOG.info(MessageFormat.format(FileUploadSuccessMsg,uploadFileName, _ConnectorArguments.getDirectoryName(), _ConnectorArguments.getContainerName()));
+		        		if(_ConnectorArguments.getContainerPath() != null) {
+		        			LOG.info(MessageFormat.format(FileUploadSuccessMsg,uploadFileName, _ConnectorArguments.getContainerName() + IConstants.Characters.SLASH + _ConnectorArguments.getContainerPath()));
+		        		} else {
+		        			LOG.info(MessageFormat.format(FileUploadSuccessMsg,uploadFileName, _ConnectorArguments.getContainerName()));
+		        		}
 		        	} else {
-		        		LOG.error(MessageFormat.format(FileUploadFailedMsg,uploadFileName, _ConnectorArguments.getDirectoryName(), _ConnectorArguments.getContainerName()));
+		        		if(_ConnectorArguments.getContainerPath() != null) {
+		        			LOG.error(MessageFormat.format(FileUploadFailedMsg,uploadFileName, _ConnectorArguments.getContainerName() + IConstants.Characters.SLASH + _ConnectorArguments.getContainerPath()));
+		        		} else {
+		        			LOG.error(MessageFormat.format(FileUploadFailedMsg,uploadFileName, _ConnectorArguments.getContainerName()));
+		        		}
 		        	}
 					break;
 
@@ -286,7 +332,7 @@ public class StorageConnectorImpl {
 						long staticTimeValue = System.currentTimeMillis();
 						if(staticTimeValue > staticFileArrivalTimeEnd) {
 							// we have the file
-							LOG.info(MessageFormat.format(FileArrivalMsg, _ConnectorArguments.getFileName(),
+							LOG.info(MessageFormat.format(FileArrivalMsg, _ConnectorArguments.getContainerFileName(),
 				        			_ConnectorArguments.getContainerName()));
 				        	fileArrivalResult = true;
 				        	fileArrivalCompleted();
