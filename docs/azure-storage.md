@@ -38,15 +38,7 @@ The encryption tool provides basic encryption capabilities to prevent clear text
 NAME=Azure Storage Connector
 DEBUG=OFF
 
-[STORAGE ACCOUNTS]
-STORAGE = <name>=<encrypted value> 
-STORAGE = <name>=<encrypted value>
-
 ```
-
-Keyword | Type | Description
--------------- | ---- | -----------
-STORAGE | Text | **name** is the storage account name and **encrypted value** is the storage account connection string encrypted using the **EncryptValue.exe** program. 
 
 ### Encrypt Utility
 The Encrypt utility uses standard 64 bit encryption.
@@ -69,6 +61,7 @@ Arguments | Description
 --------- | -----------
 **-sa**  | (Mandatory) The name of the Azure Storage account to perform the task on.
 **-t**   | (Mandatory) The task to perform.
+**-k**   | (Mandatory) The Access Key associated with the Storage . This value is the Connection String value that can be found in the Access keys section of the storage account.
 
 ### containercreate
 Can be used to create a new container within the storage account.
@@ -190,15 +183,17 @@ Arguments | Description
 
 Usage
 ```
-AzureStorage.exe -sa MY_ACCOUNT -t fileupload -cn MY_CONTAINER -cp test -lf MY_FILE??? -di c:\UPOAD\MY_DIRECTORY -ov
-AzureStorage.exe -sa MY_ACCOUNT -t fileupload -cn MY_CONTAINER -lf MY_FILE??? -di c:\UPOAD\MY_DIRECTORY -cp test/new -ov
+AzureStorage.exe -sa MY_ACCOUNT -t fileupload -k [[access_key]] -cn MY_CONTAINER -cp test -lf MY_FILE??? -di c:\UPOAD\MY_DIRECTORY -ov
+AzureStorage.exe -sa MY_ACCOUNT -t fileupload -k [[access_key]] -cn MY_CONTAINER -lf MY_FILE??? -di c:\UPOAD\MY_DIRECTORY -cp test/new -ov
 ```
 ## AzureStorage Job Sub-Type
 The AzureStorage connector provides a Job Sub-Type that can be used to simplify job definitions within OpCon.
 
 ![jobsubtype](/docs/images/azure_storage_subtype.PNG)
 
-When using the Job Sub-Type, fill in the Account name (this must be a name defined in a STORAGE definition in the Connector.config file.
+When using the Job Sub-Type, fill in the Account name (this is the name of the storage account defined in Azure.
+Fill in the Access Key associated with the Storage Account. The value is the Connection String value that can be found in the Access keys section of the storage account (encrypted global property should be used to store the access key).
 
 Select the Task from the drop-down list and enter the required values. Only values associated with the task will be enabled. Once a task has been saved, the task type cannot be changed.
-When uploading or downloading files and spefici source and target filenames are entered, wild cards are not supported.
+when listing containers or files an (*) can be used display all files and containers. 
+When uploading or downloading files and specific source and target filenames are entered, wild cards are not supported.

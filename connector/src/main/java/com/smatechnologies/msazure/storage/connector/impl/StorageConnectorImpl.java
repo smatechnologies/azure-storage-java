@@ -97,14 +97,14 @@ public class StorageConnectorImpl {
 			       	} 
 					success = _IAzureStorage.createContainer(_ConnectorArguments, storageInformation.getConnection());
 		        	if(success) {
-						LOG.info(StorageConnectorImpl.class.getSimpleName(),MessageFormat.format(CreateContainerSuccessMsg,_ConnectorArguments.getContainerName()));
+						LOG.info(StorageConnectorImpl.class.getSimpleName(),MessageFormat.format(CreateContainerSuccessMsg,_ConnectorArguments.getStorageAccount()));
 		        	} else {
 		        		LOG.error(MessageFormat.format(CreateContainerFailedMsg,_ConnectorArguments.getContainerName()));
 		        	}
 					break;
 					
 				case containerdelete:
-					success = _IAzureStorage.deleteContainer(_ConnectorArguments, storageInformation.getConnection());
+					success = _IAzureStorage.deleteContainer(_ConnectorArguments, _ConnectorArguments.getStorageAccount());
 		        	if(success) {
 		        		LOG.info(StorageConnectorImpl.class.getSimpleName(),MessageFormat.format(DeleteContainerSuccessMsg,_ConnectorArguments.getContainerName()));
 		        	} else {
@@ -134,11 +134,6 @@ public class StorageConnectorImpl {
 			       	if((_ConnectorArguments.getContainerName().contains(IConstants.Characters.ASTERIX)) ||
 			       			(_ConnectorArguments.getContainerName().contains(IConstants.Characters.QUESTION_MARK))) {
 		        		LOG.error(MessageFormat.format(FileArrivalInvalidContainerNameMsg,_ConnectorArguments.getContainerName()));
-		        		return false;
-			       	} 
-		       		if((_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.ASTERIX)) ||
-		       			(_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.QUESTION_MARK))) {
-		       			LOG.error(MessageFormat.format(FileArrivalInvalidFileNameMsg,_ConnectorArguments.getContainerFileName()));
 		        		return false;
 			       	} 
 					if(_ConnectorArguments.getFileArrivalMaximumWaitTime() != null) {
@@ -298,7 +293,13 @@ public class StorageConnectorImpl {
 			) throws Exception {
 		
 		try {
-			BlobProperties blobProperties = _IAzureStorage.checkIfFileExists(_ConnectorArguments);
+			BlobProperties blobProperties = null;
+	       	if((_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.ASTERIX)) ||
+	       			(_ConnectorArguments.getContainerFileName().contains(IConstants.Characters.QUESTION_MARK))){
+				blobProperties = _IAzureStorage.checkIfWildCardFileExists(_ConnectorArguments);
+	       	} else {
+				blobProperties = _IAzureStorage.checkIfFileExists(_ConnectorArguments);
+	       	}
 			// check maximum wait time
 			if(maxWaitTimeFileArrival > 0) {
 				LOG.debug("fileArrival : checking if maximum wait time expired");
@@ -322,7 +323,7 @@ public class StorageConnectorImpl {
 					LOG.debug("fileAvailable : returned fileSize (" + String.valueOf(fileSize) + ") previous fileSize (" + String.valueOf(previousFileSize) + ")");
 					if(previousFileSize == fileSize) {
 						if(!isFileStable) {
-							LOG.info("fileAvailable : setting stable counter");
+							LOG.debug("fileAvailable : setting stable counter");
 							isFileStable = true;
 							// set staticFileTimeEnd
 							long endCurrentTimeValue = System.currentTimeMillis();
@@ -346,15 +347,19 @@ public class StorageConnectorImpl {
 						}
 					}
 				} else {
-					LOG.debug("fileAvailable : file not found");
+					LOG.info("fileAvailable : file not found");
 
 				}
 			} else {
-	       		LOG.debug("fileAvailable : file not found");
+	       		LOG.info("fileAvailable : file not found");
 
 			}
 		} catch (Exception ex) {
-			throw new Exception(ex);
+			LOG.error(_Util.getExceptionDetails(ex));
+			// terminate as we got an exception
+        	fileArrivalResult = false;
+        	fileArrivalCompleted();
+			futureFileArrival.cancel(true);
 		}
 	}	// END : fileAvailable
 

@@ -68,11 +68,10 @@ public class StorageConnector {
 			LOG.info(SeperatorLineMsg);
 			LOG.info(MessageFormat.format(ClientVersionDisplayMsg,IConstants.General.SOFTWARE_VERSION));
 			LOG.info(SeperatorLineMsg);
-        	StorageInformation info = _ConnectorConfig.getStorageInformation(_ConnectorArguments.getStorageAccount().toLowerCase());
-        	if(info == null) {
-	        	LOG.error(MessageFormat.format(StorageAccountMismatchMsg, _ConnectorArguments.getStorageAccount()));
-        		System.exit(1);
-        	}
+//        	StorageInformation info = _ConnectorConfig.getStorageInformation(_ConnectorArguments.getStorageAccount().toLowerCase());
+        	StorageInformation info = new StorageInformation();
+        	info.setName(_ConnectorArguments.getStorageAccount());
+        	info.setConnection(_ConnectorArguments.getAccessKey());
         	LOG.info(MessageFormat.format(StorageAccountMsg,_ConnectorArguments.getStorageAccount()));
         	LOG.info(MessageFormat.format(TaskMsg,_ConnectorArguments.getTask()));
         	LOG.info(MessageFormat.format(ContainerNameMsg,_ConnectorArguments.getContainerName()));

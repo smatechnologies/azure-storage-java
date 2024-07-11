@@ -4,7 +4,7 @@
 
   <groupId>com.smatechnologies</groupId>
   <artifactId>msazure.storage.connector</artifactId>
-  <version>2.0.1</version>
+  <version>2.0.2</version>
   <packaging>jar</packaging>
 
   <name>msazure.storage.connector</name>
@@ -203,13 +203,26 @@
 	          			<configuration>
 	          				<target>
 	               				<copy file="${project.basedir}/src/main/resources/Connector.config" todir="${release.dir}"/>
-	               				<copy file="${project.basedir}/src/main/resources/com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202106110629.jar" todir="${release.dir}"/>
+	               				<copy file="${project.basedir}/src/main/resources/AzureStorage.sh" todir="${release.dir}"/>
+	               				<copy file="${project.basedir}/src/main/resources/com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202203231253.jar" todir="${release.dir}"/>
 	             			</target>
 	          			</configuration>
 	          			<goals>
 	            			<goal>run</goal>
 	          			</goals>
 	        		</execution>
+      			<execution>
+ 					<id>copy-jars</id>
+      				<phase>package</phase>
+        			<configuration>
+             			<target>
+               				<copy file="${project.basedir}/target/${project.artifactId}.jar" todir="${release.dir}"/>
+             			</target>
+        			</configuration>
+        			<goals>
+          				<goal>run</goal>
+        			</goals>
+      			</execution>
 				</executions>
 			</plugin> 
 	   	</plugins>

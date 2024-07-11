@@ -6,6 +6,7 @@ public class ConnectorArguments {
 
 	private static final String TaskDescriptionMsg = "(Required) The task to execute";
 	private static final String StorageAccountDescriptionMsg = "(Required) Storage Account name";
+	private static final String AccessKeyDescriptionMsg = "(Required) Storage Account access Key";
 	private static final String ContainerNameDescriptionMsg = "(Required) required for all tasks - the name of the container";
 	private static final String ContainerPathDescriptionMsg = "(Optional) the path name of a file(s) within the container";
 	private static final String ContainerFileNameDescriptionMsg = "(Optional) required for filedelete, fileupload, filelist and filedownload functions - the name of the file in the container";
@@ -22,6 +23,9 @@ public class ConnectorArguments {
 
 	@Parameter(names="-sa", required=true, description = StorageAccountDescriptionMsg)
 	private String storageAccount = null;
+
+	@Parameter(names="-k", required=true, description = AccessKeyDescriptionMsg)
+	private String accessKey = null;
 
 	@Parameter(names="-cn", required=true, description = ContainerNameDescriptionMsg)
 	private String containerName = null;
@@ -68,6 +72,14 @@ public class ConnectorArguments {
 
 	public void setStorageAccount(String storageAccount) {
 		this.storageAccount = storageAccount;
+	}
+
+	public String getAccessKey() {
+		return accessKey;
+	}
+
+	public void setAccessKey(String accessKey) {
+		this.accessKey = accessKey;
 	}
 
 	public String getContainerName() {

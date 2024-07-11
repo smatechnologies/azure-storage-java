@@ -2,7 +2,9 @@ package com.sma.ui.core.jobdetails.msazurestorage;
 
 import java.security.InvalidParameterException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -10,7 +12,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -25,17 +26,17 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.sma.core.OpconException;
+import com.sma.core.api.KeyValueData;
 import com.sma.core.api.constants.ExitCodeAdvancedConstants;
 import com.sma.core.api.constants.SystemConstants;
 import com.sma.core.api.interfaces.IPersistentJob;
 import com.sma.core.api.interfaces.ISpecificJobProperties;
-import com.sma.core.api.job.specific.WindowsJobProperties;
+import com.sma.core.api.job.specific.UnixJobProperties;
 import com.sma.core.session.ContextID;
 import com.sma.core.util.Util;
 import com.sma.ui.core.jobdetails.CommandLineTokenizer;
 import com.sma.ui.core.jobdetails.JobDetailsHelper;
 import com.sma.ui.core.jobdetails.JobUtil;
-import com.sma.ui.core.jobdetails.windows.AbstractWindowsSubJobDetailsWidget;
 import com.sma.ui.core.messages.IMessageDisplayer;
 import com.sma.ui.core.widgets.base.CTabFolder2;
 import com.sma.ui.core.widgets.base.ComboItem;
@@ -45,12 +46,11 @@ import com.sma.ui.core.widgets.listeners.ControlTokenSelectorListener;
 import com.sma.ui.core.widgets.listeners.DirtyKeyAdapter;
 import com.sma.ui.core.widgets.listeners.DirtyModifyAdapter;
 import com.sma.ui.core.widgets.listeners.DirtySelectionAdapter;
-import com.sma.ui.core.widgets.validation.ValidationException;
 import com.sma.ui.core.widgets.validation.ValidationMessage;
 
-public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSubJobDetailsWidget {
+public class MsAzureStorageUnixSubJobDetailsWidget extends AbstractMsAzureStorageUnixSubJobDetailsWidget {
 
-	private final static String COMMAND_SUFFIX = SystemConstants.BACK_SLASH + "AzureStorage.exe";
+	private final static String COMMAND_SUFFIX = SystemConstants.SLASH + "AzureStorage.sh";
 
 	private static final String LOCPATH_NAME = "Location";
 	private static final String LOCPATH_TOOLTIP = "The name of a global property that contains the location of the Azure Storage Connector";
@@ -105,12 +105,10 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 	
 	private CTabItem _failureCriteriaTab;
 	private ExitCodeAdvancedWidget _advancedExitCodeWidget;
-
-	public MsAzureStorageWindowsSubJobDetailsWidget(Composite parent,
-			IMessageDisplayer messageManager, 
-			ContextID context) {
+	
+	public MsAzureStorageUnixSubJobDetailsWidget(Composite parent,
+			IMessageDisplayer messageManager, ContextID context) {
 		super(parent, messageManager, context);
-
 		GridLayout layout = new GridLayout(1, false);
 		layout.marginHeight = layout.marginWidth = 0;
 		layout.horizontalSpacing = layout.verticalSpacing = 0;
@@ -134,7 +132,7 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 		_locPathText.setToolTipText(LOCPATH_TOOLTIP);
 		
 		_storageAccountText = JobUtil.createLabeledText(_mainInfoComposite, ACCOUNT_NAME, 0, JobUtil.COLOR_BLUE, JobUtil.COLOR_LIGHT_GREEN, SWT.BORDER, 1);
-		_storageAccountText.setToolTipText(ACCESS_KEY_TOOLTIP);
+		_storageAccountText.setToolTipText(ACCOUNT_TOOLTIP);
 
 		_accessKeyText = JobUtil.createLabeledText(_mainInfoComposite, ACCESS_KEY_NAME, 0, JobUtil.COLOR_BLUE, JobUtil.COLOR_LIGHT_GREEN, SWT.BORDER, 1);
 		_accessKeyText.setToolTipText(ACCESS_KEY_TOOLTIP);
@@ -373,12 +371,12 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 		new ControlTokenSelectorListener(_locPathText, getContextID());
 	
 	}	
-	
+
 	@Override
 	public void setDefaults() {
 
 		setSendDirtyEvents(false);
-		_locPathText.setText(MsAzureStorageConstants.LOCATION_PATH_TOKEN);
+		_locPathText.setText(MsAzureStorageConstants.LOCATION_PATH_TOKEN_UNIX);
 		_storageAccountText.setText(SystemConstants.EMPTY_STRING);
 		_accessKeyText.setText(SystemConstants.EMPTY_STRING);
 		_taskItemCombo.setSelection(MsAzureStorageEnums.Task.containerlist, true);
@@ -411,7 +409,12 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 	}	
 	
 	@Override
-	protected String getCommandLine() {
+	String getParameters() {
+		return SystemConstants.EMPTY_STRING;
+	}
+
+	@Override
+	protected String getStartImage() {
 		StringBuilder builder = new StringBuilder();
 		MsAzureStorageEnums.Task task = getSelectedTask();
 		String taskName = task.name();
@@ -634,33 +637,25 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 	}
 
 	@Override
-	protected String getWorkingDirectory() {
-		// extract the location property from the commandline and display this is the 
-		int endProperty = _locPathText.getText().indexOf(SystemConstants.BACK_SLASH);
-		if(endProperty > -1) {
-			return _locPathText.getText().substring(1, endProperty);
-		} else {
-			return _locPathText.getText() + SystemConstants.BACK_SLASH;
-		}
-	}
-	
-	@Override
 	protected void initializeContents(ISpecificJobProperties jobProperties)
 			throws OpconException {
-		WindowsJobProperties windowsDetails = (WindowsJobProperties) jobProperties;
+
+		UnixJobProperties unixDetails = (UnixJobProperties) jobProperties;
+
 		try {
-			if(windowsDetails != null) {
-				final String commandLine = windowsDetails.getCommandLine();
+			if (unixDetails != null) {
+				String startImage = unixDetails.getStartImage() + SystemConstants.SPACE + unixDetails.getParameters();
 				// basic check first
-				if (!commandLine.contains(COMMAND_SUFFIX)) {
-					throw new ParseException(
-							MessageFormat.format(MsAzureStorageConstants.PARSE_JOB_COMMAND_ERROR,"Azure Storage"));
+				if (!startImage.contains(COMMAND_SUFFIX)) {
+					MessageFormat.format(MsAzureStorageConstants.PARSE_JOB_COMMAND_ERROR,"Azure Storage");
 				}
-				parseCommandLine(commandLine);
+				parseStartImage(startImage);
+				
 				_advancedExitCodeWidget.initializeContents();
 				if (getInput() != null && getInput().getSpecificJobProperties() != null) {
 					try {
-						WindowsJobProperties _jobProperties = (WindowsJobProperties) getInput().getSpecificJobProperties();
+						List<KeyValueData> environmentKeysAndValues = new ArrayList<KeyValueData>();
+						UnixJobProperties _jobProperties = (UnixJobProperties) getInput().getSpecificJobProperties();
 						_advancedExitCodeWidget.setInput(_jobProperties.getExitCodeAdvancedRows());
 					} catch (OpconException e) {
 						setErrorMessage("Error initializing user selector " + Util.getCauseError(e));
@@ -669,24 +664,22 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 			} else {
 				setDefaults();
 			}
-		} catch (Exception e) {
+		} catch (ParseException e) {
 			throw new OpconException(e);
 		}
 	}
+	
+	private void parseStartImage(String startImage) throws ParseException {
 
-	@SuppressWarnings("incomplete-switch")
-	private void parseCommandLine(String commandLine) throws ParseException {
+		// extract the location property from the commandline and display this
+		int endProperty = startImage.indexOf(SystemConstants.SLASH);
 
-		// extract the location property from the command line and display this
-		
-		System.out.println("commandLine {" + commandLine + "}");
-		commandLine = removeLeadingTrailingDoubleQuotes(commandLine);
-		int endProperty = commandLine.indexOf(SystemConstants.BACK_SLASH);
 		if (endProperty > -1) {
-			_locPathText.setText(commandLine.substring(0, endProperty));
+			_locPathText.setText(startImage.substring(1, endProperty));
 		}
-		// remove exe from commandLine
-		commandLine = commandLine.replace(MsAzureStorageConstants.LOCATION_PATH_TOKEN + COMMAND_SUFFIX, SystemConstants.EMPTY_STRING).trim();
+		// remove command from commandLine
+		startImage = startImage.replace(MsAzureStorageConstants.LOCATION_PATH_TOKEN_UNIX + COMMAND_SUFFIX,
+						SystemConstants.EMPTY_STRING).trim();
 
 		Options options = new Options();
 		options.addOption(MsAzureStorageConstants.TASK_ARGUMENT, true, SystemConstants.EMPTY_STRING);
@@ -704,9 +697,7 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 		options.addOption(MsAzureStorageConstants.CONTAINER_FILE_NAME_ARGUMENT, true, SystemConstants.EMPTY_STRING);
 		options.addOption(MsAzureStorageConstants.LOCAL_FILE_NAME_ARGUMENT, true, SystemConstants.EMPTY_STRING);
 		
-		commandLine = removeLeadingTrailingDoubleQuotes(commandLine);
-
-		String[] arguments = CommandLineTokenizer.tokenize(commandLine, true);
+		String[] arguments = CommandLineTokenizer.tokenize(startImage, true);
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd = parser.parse(options, arguments);
 		String task = null;
@@ -958,19 +949,36 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 
 		}
 	}
-	
-	private String checkNameforAll(
-			String checkName
-			) {
-		String name = null;
-		
-		if(checkName.equals("ALL")) {
-			name = SystemConstants.ASTERISK;
-		} else {
-			name = checkName;
+
+	public ValidationMessage doSave(IProgressMonitor monitor, IPersistentJob toSave) throws OpconException {
+		ValidationMessage msg = super.doSave(monitor, toSave);
+		if (msg != null) {
+			return msg;
 		}
-		return name;
+
+		final UnixJobProperties unixJob = (UnixJobProperties) toSave.getSpecificJobProperties();
+		monitor.beginTask("Advanced Failure Criteria Properties", 5);
+
+		unixJob.setExitCodeAdvancedOperators(_advancedExitCodeWidget.getExitCodeAdvancedOperators());
+		monitor.worked(1);
+
+		unixJob.setExitCodeAdvancedValues(_advancedExitCodeWidget.getExitCodeAdvancedValues());
+		monitor.worked(1);
+
+		unixJob.setExitCodeAdvancedEndValues(_advancedExitCodeWidget.getExitCodeAdvancedEndValues());
+		monitor.worked(1);
+
+		unixJob.setExitCodeAdvancedResults(_advancedExitCodeWidget.getExitCodeAdvancedResults());
+		monitor.worked(1);
+
+		unixJob.setExitCodeAdvancedComparators(_advancedExitCodeWidget.getExitCodeAdvancedComparators());
+		monitor.worked(1);
+
+		monitor.done();
+
+		return null;
 	}
+
 	
 	private MsAzureStorageEnums.Task getSelectedTask() {
 		final ComboItem comboItem = _taskItemCombo.getSelectedItem();
@@ -978,76 +986,6 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 			return MsAzureStorageEnums.Task.unknown;
 		}
 		return (MsAzureStorageEnums.Task) comboItem.data;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sma.ui.core.widgets.interfaces.IJobTypeDetailsWidget#doSave(org.eclipse.core.runtime.IProgressMonitor, com.sma.core.api.interfaces.IPersistentJob)
-	 */
-	public ValidationMessage doSave(IProgressMonitor monitor, IPersistentJob toSave) throws OpconException {
-		ValidationMessage msg = super.doSave(monitor, toSave);
-		if (msg != null) {
-			return msg;
-		}
-
-		final WindowsJobProperties winJob = (WindowsJobProperties) toSave.getSpecificJobProperties();
-		monitor.beginTask("Windows Job Advanced Failure Criteria Properties", 5);
-
-		winJob.setExitCodeAdvancedOperators(_advancedExitCodeWidget.getExitCodeAdvancedOperators());
-		monitor.worked(1);
-
-		winJob.setExitCodeAdvancedValues(_advancedExitCodeWidget.getExitCodeAdvancedValues());
-		monitor.worked(1);
-
-		winJob.setExitCodeAdvancedEndValues(_advancedExitCodeWidget.getExitCodeAdvancedEndValues());
-		monitor.worked(1);
-
-		winJob.setExitCodeAdvancedResults(_advancedExitCodeWidget.getExitCodeAdvancedResults());
-		monitor.worked(1);
-
-		winJob.setExitCodeAdvancedComparators(_advancedExitCodeWidget.getExitCodeAdvancedComparators());
-		monitor.worked(1);
-
-		monitor.done();
-
-		return null;
-	}
-	
-	public ValidationMessage checkContents() {
-		ValidationMessage message = super.checkContents();
-		if (message != null) {
-			return message;
-		}
-		if (getCommandLine().length() > MsAzureStorageConstants.COMMAND_LINE_LIMIT) {
-			return new ValidationMessage(this,MsAzureStorageConstants.TOO_LONG_COMMAND_LINE,
-					IMessageProvider.ERROR);
-		}
-		if ((_containerFileNameText.getText().trim().length() > 0) &&
-			(_localFileNameText.getText().trim().length() > 0)) {
-	       	if((_containerFileNameText.getText().contains(SystemConstants.ASTERISK)) ||
-	       			(_containerFileNameText.getText().contains(SystemConstants.QUESTION_MARK))){
-				return new ValidationMessage(this, MsAzureStorageConstants.WILD_CARDS_NOT_SUPPORTED_ERROR, IMessageProvider.ERROR, _containerFileNameText);
-	       	} else if((_localFileNameText.getText().contains(SystemConstants.ASTERISK)) ||
-	       			(_localFileNameText.getText().contains(SystemConstants.QUESTION_MARK))){
-				return new ValidationMessage(this, MsAzureStorageConstants.WILD_CARDS_NOT_SUPPORTED_ERROR, IMessageProvider.ERROR, _localFileNameText);
-	       	}
-		}
-		return null;
-	}
-
-	private MsAzureStorageEnums.Task getTaskfromName(String name) {
-		MsAzureStorageEnums.Task [] tasks = MsAzureStorageEnums.Task.values();
-		for (int i = 0; i < tasks.length; i++) {
-			if (name.equals(tasks[i].name())){
-				return tasks[i];
-			}
-		}
-		throw new InvalidParameterException("Function " + name + " Not Found");
-	}
-
-	@Override
-	protected void checkUnhauthorizedFields(ISpecificJobProperties jobProperties)
-			throws ValidationException {
-		// validation not required
 	}
 
 	private String removeLeadingTrailingDoubleQuotes(String input) {
@@ -1063,6 +1001,29 @@ public class MsAzureStorageWindowsSubJobDetailsWidget extends AbstractWindowsSub
 			}
 		} 
 		return removed;
+	}
+
+	private String checkNameforAll(
+			String checkName
+			) {
+		String name = null;
+		
+		if(checkName.equals("ALL")) {
+			name = SystemConstants.ASTERISK;
+		} else {
+			name = checkName;
+		}
+		return name;
+	}
+
+	private MsAzureStorageEnums.Task getTaskfromName(String name) {
+		MsAzureStorageEnums.Task [] tasks = MsAzureStorageEnums.Task.values();
+		for (int i = 0; i < tasks.length; i++) {
+			if (name.equals(tasks[i].name())){
+				return tasks[i];
+			}
+		}
+		throw new InvalidParameterException("Function " + name + " Not Found");
 	}
 
 }

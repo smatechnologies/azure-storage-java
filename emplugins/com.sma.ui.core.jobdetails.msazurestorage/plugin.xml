@@ -4,6 +4,15 @@
 
    <extension
          point="com.sma.ui.extensions.jobdetail">
+     <jobDetail
+            class="com.sma.ui.core.jobdetails.unix.UnixJobDetailsExtension"
+            id="UNIX">
+         <jobSubDetail
+               class="com.sma.ui.core.jobdetails.msazurestorage.MsAzureStorageUnixSubJobDetailExtension"
+               id="Azure Storage"
+               name="Azure Storage">
+         </jobSubDetail>
+      </jobDetail>
       <jobDetail
             class="com.sma.ui.core.jobdetails.windows.WindowsJobDetailsExtension"
             id="WINDOWS">

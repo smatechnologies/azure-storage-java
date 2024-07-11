@@ -31,6 +31,7 @@ public interface MsAzureStorageConstants {
 
 	
 	String LOCATION_PATH_TOKEN = "[[AzureStoragePath]]";
+	String LOCATION_PATH_TOKEN_UNIX = "[[AzureStoragePathUnix]]";
 	String LOCATION_PATH_NAME = "Connector Location";
 	String LOCATION_PATH_TOKEN_NAME_TOOLTIP = "The name of a global property that contains the installed location of the Connector";
 
@@ -49,6 +50,7 @@ public interface MsAzureStorageConstants {
 	
 	String TASK_ARGUMENT = "t";
 	String ACCOUNT_NAME_ARGUMENT = "sa";
+	String ACCESS_KEY_ARGUMENT = "k";
 	String CONTAINER_NAME_ARGUMENT = "cn";
 	String CONTAINER_PATH_ARGUMENT = "cp";
 	String CONTAINER_FILE_NAME_ARGUMENT = "cf";

@@ -93,7 +93,7 @@ public class AzureStorageImpl implements IAzureStorage {
 			) throws Exception {
 
 		String containerFileName = null;
-		BlobProperties blobPproperties = null;
+		BlobProperties blobProperties = null;
 		
 		try{
 			if(_ConnectorArguments.getContainerPath() != null) {
@@ -101,19 +101,99 @@ public class AzureStorageImpl implements IAzureStorage {
 			} else {
 				containerFileName = _ConnectorArguments.getContainerFileName();
 			}
-			LOG.debug("Check if File (" + containerFileName + ") exists in container (" + _ConnectorArguments.getContainerName() + ") in storage account (" + _ConnectorArguments.getStorageAccount() + ")");
+			LOG.info("Check if File (" + containerFileName + ") exists in container (" + _ConnectorArguments.getContainerName() + ") in storage account (" + _ConnectorArguments.getStorageAccount() + ")");
 	       	// get connection String
-	       	StorageInformation storageInformation = _ConnectorConfig.getStorageInformation(_ConnectorArguments.getStorageAccount().toLowerCase());
+        	StorageInformation storageInformation = new StorageInformation();
+        	storageInformation.setName(_ConnectorArguments.getStorageAccount());
+        	storageInformation.setConnection(_ConnectorArguments.getAccessKey());
 	    	// Create a BlobServiceClient object which will be used to create a container client
 	    	BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString(storageInformation.getConnection()).buildClient();
 	    	// get the container client object
 	    	BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(_ConnectorArguments.getContainerName());
 	    	// Get a reference to a blob
 			BlobClient blobClient = containerClient.getBlobClient(containerFileName);
-			blobPproperties = blobClient.getProperties();
+			blobProperties = blobClient.getProperties();
 		} catch (com.azure.storage.blob.models.BlobStorageException azex) {
+			System.out.println(azex.getMessage());
 			if(azex.getMessage().contains(AZURE_ERROR_EMPTY_BODY)) {
-				LOG.debug("File (" + _ConnectorArguments.getContainerFileName() + ") not found in container (" + containerFileName + ") in storage account (" + _ConnectorArguments.getStorageAccount() + ")");
+				LOG.info("File (" + _ConnectorArguments.getContainerFileName() + ") not found in container (" + containerFileName + ") in storage account (" + _ConnectorArguments.getStorageAccount() + ")");
+				return null;
+			} else if(azex.getMessage().contains("BlobNotFound")) {
+				return null;
+			} else {
+				throw new Exception(azex);
+			}
+		} catch (Exception ex) {
+			throw new Exception(ex);
+		}
+		return blobProperties;
+	}	// END : checkIfFileExists
+
+	public BlobProperties checkIfWildCardFileExists(
+			ConnectorArguments _ConnectorArguments
+			) throws Exception {
+
+		String containerFileName = null;
+		BlobProperties blobPproperties = null;
+		String blobPattern = null;
+		String blobNameExists = null;
+		
+		try{
+			if(_ConnectorArguments.getContainerPath() != null) {
+				containerFileName = _ConnectorArguments.getContainerPath() + IConstants.Characters.SLASH + _ConnectorArguments.getContainerFileName();
+			} else {
+				containerFileName = _ConnectorArguments.getContainerFileName();
+			}
+			blobPattern = _ConnectorArguments.getContainerFileName();
+			LOG.info("Check if File (" + containerFileName + ") exists in container (" + _ConnectorArguments.getContainerName() + ") in storage account (" + _ConnectorArguments.getStorageAccount() + ")");
+	       	// get connection String
+        	StorageInformation storageInformation = new StorageInformation();
+        	storageInformation.setName(_ConnectorArguments.getStorageAccount());
+        	storageInformation.setConnection(_ConnectorArguments.getAccessKey());
+	    	// Create a BlobServiceClient object which will be used to create a container client
+	    	BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString(storageInformation.getConnection()).buildClient();
+	    	// get the container client object
+	    	BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(_ConnectorArguments.getContainerName());
+	    	// Get the list of blobs in the container
+	    	for (BlobItem blobItem : containerClient.listBlobs()) {
+	    		if(_ConnectorArguments.getContainerPath() != null) {
+	    			if(blobItem.getName().startsWith(_ConnectorArguments.getContainerPath())) {
+	    				// extract blob name
+		       			int lastForwardSlash = blobItem.getName().lastIndexOf(IConstants.Characters.SLASH);
+		       			if(lastForwardSlash > -1) {
+		       				String blobname = blobItem.getName().substring(lastForwardSlash + 1, blobItem.getName().length());
+			   				if(FilenameUtils.wildcardMatch(blobname, blobPattern)) {
+					    		if(_ConnectorConfig.isDebug()) {	
+					    			LOG.info("DEBUG : Found blob (" + blobItem.getName() + ") in container (" + containerClient.getBlobContainerName() + ")");
+						       	}
+					    		blobNameExists = blobItem.getName();
+					    		break;
+			   				}
+		       			}
+	    			}
+	    		} else {
+    				// check for blob in root 
+	    			if(!blobItem.getName().contains("/")) {
+		   				if(FilenameUtils.wildcardMatch(blobItem.getName(), blobPattern)) {
+				    		if(_ConnectorConfig.isDebug()) {	
+				    			LOG.info("DEBUG : Found blob (" + blobItem.getName() + ") in container (" + containerClient.getBlobContainerName() + ")");
+					       	}
+				    		blobNameExists = blobItem.getName();
+				    		break;
+		   				}
+    				}
+    			}
+	    	}
+	    	if(blobNameExists != null) {
+				BlobClient blobClient = containerClient.getBlobClient(blobNameExists);
+				blobPproperties = blobClient.getProperties();
+	    	}
+		} catch (com.azure.storage.blob.models.BlobStorageException azex) {
+			System.out.println(azex.getMessage());
+			if(azex.getMessage().contains(AZURE_ERROR_EMPTY_BODY)) {
+				LOG.info("File (" + _ConnectorArguments.getContainerFileName() + ") not found in container (" + containerFileName + ") in storage account (" + _ConnectorArguments.getStorageAccount() + ")");
+				return null;
+			} else if(azex.getMessage().contains("BlobNotFound")) {
 				return null;
 			} else {
 				throw new Exception(azex);
@@ -123,7 +203,6 @@ public class AzureStorageImpl implements IAzureStorage {
 		}
 		return blobPproperties;
 }	// END : checkIfFileExists
-
 
 	public List<String> getContainerBlobList(
 			ConnectorArguments _ConnectorArguments,

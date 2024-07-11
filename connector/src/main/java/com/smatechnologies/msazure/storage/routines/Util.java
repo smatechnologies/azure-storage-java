@@ -42,20 +42,20 @@ public class Util {
         		_ConnectorConfig.setDebug(false);
         	}
         	// get the STORAGE ACCOUNT definitions
-			List<StorageInformation> storageAccounts = new ArrayList<StorageInformation>();
-			String[] accounts = getStorageAccountsFromConfigurationFile(configFileName, IConstants.ConfigValues.STORAGE_HEADER);
-			if(accounts != null) {
-				for(String account : accounts) {
-					String[] values = tokenizeString(account, false, IConstants.Characters.EQUALS);
-					StorageInformation storageInformation = new StorageInformation();
-					storageInformation.setName(values[0].toLowerCase().trim());
-					storageInformation.setConnection(decryptEncodedValue(values[1]));
-					storageAccounts.add(storageInformation);
-				}
-			}
-			if(!storageAccounts.isEmpty()) {
-				_ConnectorConfig.loadStorageInformation(storageAccounts);
-			}
+//			List<StorageInformation> storageAccounts = new ArrayList<StorageInformation>();
+//			String[] accounts = getStorageAccountsFromConfigurationFile(configFileName, IConstants.ConfigValues.STORAGE_HEADER);
+//			if(accounts != null) {
+//				for(String account : accounts) {
+//					String[] values = tokenizeString(account, false, IConstants.Characters.EQUALS);
+//					StorageInformation storageInformation = new StorageInformation();
+//					storageInformation.setName(values[0].toLowerCase().trim());
+//					storageInformation.setConnection(decryptEncodedValue(values[1]));
+//					storageAccounts.add(storageInformation);
+//				}
+//			}
+//			if(!storageAccounts.isEmpty()) {
+//				_ConnectorConfig.loadStorageInformation(storageAccounts);
+//			}
 
 		} catch (Exception ex) {
 			throw new Exception(ex);

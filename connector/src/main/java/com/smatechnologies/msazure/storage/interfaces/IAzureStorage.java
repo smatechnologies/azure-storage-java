@@ -15,5 +15,6 @@ public interface IAzureStorage {
 	public boolean upLoadFile(ConnectorArguments _ConnectorArguments, String connectionString) throws Exception;
 	public boolean downLoadFile(ConnectorArguments _ConnectorArguments, String connectionString) throws Exception;
 	public BlobProperties checkIfFileExists(ConnectorArguments _AzureConnectorArguments) throws Exception;
+	public BlobProperties checkIfWildCardFileExists(ConnectorArguments _AzureConnectorArguments) throws Exception;
 	
 }
