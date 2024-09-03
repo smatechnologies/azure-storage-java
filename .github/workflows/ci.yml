@@ -97,13 +97,13 @@ jobs:
     
     steps:
       - name: Download Windows Package
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: AzureStorage_Windows.zip
           path: ./
 
       - name: Download job subtype
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: com.sma.ui.core.jobdetails.msazurestorage_1.0.0.202203231253.jar
           path: ./
